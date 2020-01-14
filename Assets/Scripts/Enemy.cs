@@ -57,11 +57,14 @@ public class Enemy : MonoBehaviour
 
         if (Time.time > _nextFire)
         {
-            _nextFire += Random.Range(2f, 8f);
-            print("Enemy firing missile");
-            if (_laserPrefab != null)
+            if (_boxCollider.enabled)
             {
-                var laserObject = Instantiate(_laserPrefab, transform.position + Vector3.up, Quaternion.identity);
+                _nextFire += Random.Range(2f, 8f);
+                print("Enemy firing missile");
+                if (_laserPrefab != null)
+                {
+                    var laserObject = Instantiate(_laserPrefab, transform.position + Vector3.up, Quaternion.identity);
+                }
             }
         }
     }
