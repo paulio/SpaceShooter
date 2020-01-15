@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +11,6 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Text _ammoText;
 
-
     [SerializeField]
     private Text _gameOverText;
 
@@ -20,10 +20,14 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Image _livesImage;
 
+    [SerializeField]
+    private Image _thrustFuelImage;
 
     [SerializeField]
     private Sprite[] livesSprites;
+
     private GameManager _gameManager;
+    private ThrustFuel _thrustFuel;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +35,7 @@ public class UIManager : MonoBehaviour
         _scoreText.text = "Score: 000";
         _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
         LogHelper.CheckForNull(_gameManager, nameof(_gameManager));
+        _thrustFuel = new ThrustFuel(_thrustFuelImage);
     }
 
     public void UpdateScore(int score)
@@ -51,9 +56,13 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void UpdateThrustFuel(float thrustFuel)
+    {
+        _thrustFuel.UpdateThrustFuel(thrustFuel);
+    }
+
     public void UpdateLives(int lives)
     {
-        print($"UpdateLives {lives}");
         _livesImage.sprite = livesSprites[lives];
         if (lives < 1)
         {

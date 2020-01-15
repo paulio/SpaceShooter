@@ -58,6 +58,8 @@ public class Player : MonoBehaviour
     private int _score = 0;
     private int _ammo;
 
+    private float _thrustFuel = 100f;
+
     private Vector3 playerMoveDirection = Vector3.zero;
     private float _nextFire = 0f;
     private SpawnManager _spawnManager;
@@ -78,6 +80,7 @@ public class Player : MonoBehaviour
     private bool _isImmune;
     private Shields _shields;
     private bool _isMultiShotActive;
+    private bool _canThrust = true;
 
     public int Score => this._score;
 
@@ -276,13 +279,42 @@ public class Player : MonoBehaviour
         var horizontalInput = Input.GetAxis("Horizontal");
         var verticalInput = Input.GetAxis("Vertical");
 
-        var isAccelerating = Input.GetKey(KeyCode.LeftShift);
+        var isAccelerating = false;
+        if (_canThrust)
+        {
+            isAccelerating = Input.GetKey(KeyCode.LeftShift);
+        }
+
         playerMoveDirection.x = horizontalInput;
         playerMoveDirection.y = verticalInput;
-        playerMoveDirection = playerMoveDirection * Time.deltaTime * _speed * (isAccelerating ? _speedAccelerateMultiplier : 1f);
-
+        playerMoveDirection = playerMoveDirection * Time.deltaTime * _speed * (isAccelerating && _thrustFuel > 0f ? _speedAccelerateMultiplier : 1f);
         transform.Translate(playerMoveDirection);
+
+        if (isAccelerating)
+        {
+            _thrustFuel = Mathf.Clamp(_thrustFuel - 0.5f, 0f, 100f);
+        }
+        else
+        {
+            _thrustFuel = Mathf.Clamp(_thrustFuel + 0.05f, 0f, 100f);
+        }
+
+        if (_thrustFuel == 0)
+        {
+            StartCoroutine(nameof(ThrustFuelCoolDownRoutine));
+        }
+
+        _uiManager.UpdateThrustFuel(_thrustFuel);
+
         ClampBoundaries();
+    }
+
+    private IEnumerator ThrustFuelCoolDownRoutine()
+    {
+        _canThrust = false;
+        const float DelayAfterEmptyFuel = 8f;
+        yield return new WaitForSeconds(DelayAfterEmptyFuel);
+        _canThrust = true;
     }
 
     private void ClampBoundaries()
