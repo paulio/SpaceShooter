@@ -8,7 +8,10 @@ public class Player : MonoBehaviour
     private float _speed = 5f;
 
     [SerializeField]
-    private float _speedMultiplier = 2f;
+    private float _speedAccelerateMultiplier = 10.5f;
+
+    [SerializeField]
+    private float _speedPowerUpMultiplier = 2f;
 
     [SerializeField]
     private GameObject _laserPrefab;
@@ -206,9 +209,10 @@ public class Player : MonoBehaviour
         var horizontalInput = Input.GetAxis("Horizontal");
         var verticalInput = Input.GetAxis("Vertical");
 
+        var isAccelerating = Input.GetKey(KeyCode.LeftShift);
         playerMoveDirection.x = horizontalInput;
         playerMoveDirection.y = verticalInput;
-        playerMoveDirection = playerMoveDirection * Time.deltaTime * _speed;
+        playerMoveDirection = playerMoveDirection * Time.deltaTime * _speed * (isAccelerating ? _speedAccelerateMultiplier : 1f);
 
         transform.Translate(playerMoveDirection);
         ClampBoundaries();
@@ -250,7 +254,7 @@ public class Player : MonoBehaviour
         _isSpeedUpActive = true;
         _powerUpAudio?.Play();
         var currentSpeed = _speed;
-        this._speed *= _speedMultiplier;
+        this._speed *= _speedPowerUpMultiplier;
         const float speedUpLifeTime = 10f;
         yield return new WaitForSeconds(speedUpLifeTime);
         _isSpeedUpActive = false;
