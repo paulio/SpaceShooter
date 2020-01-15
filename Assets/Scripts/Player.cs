@@ -56,6 +56,7 @@ public class Player : MonoBehaviour
 
 
     private int _score = 0;
+    private Animator _mainCameraAnimator;
     private int _ammo;
 
     private float _thrustFuel = 100f;
@@ -97,6 +98,9 @@ public class Player : MonoBehaviour
 
         this._audioManager = GameObject.Find("Audio_Manager").GetComponent<AudioManager>();
         LogHelper.CheckForNull(_audioManager, nameof(_audioManager));
+
+        this._mainCameraAnimator = Camera.main.GetComponent<Animator>();
+        LogHelper.CheckForNull(_mainCameraAnimator, nameof(_mainCameraAnimator));
 
         _ammo = _maxAmmo;
         this._uiManager?.UpdateScore(_score);
@@ -161,6 +165,7 @@ public class Player : MonoBehaviour
     {
         if (!_isImmune)
         {
+            StartCoroutine(nameof(ShakeCameraRoutine));
             if (_isShieldsUpActive)
             {
                 if (_shields != null)
@@ -192,6 +197,13 @@ public class Player : MonoBehaviour
 
             StartCoroutine(StartImmunityRoutine());
         }
+    }
+
+    private IEnumerator ShakeCameraRoutine()
+    {
+        _mainCameraAnimator.enabled = true;
+        yield return new WaitForSeconds(0.2f);
+        _mainCameraAnimator.enabled = false;
     }
 
     private IEnumerator StartImmunityRoutine()
