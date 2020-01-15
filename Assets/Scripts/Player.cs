@@ -48,8 +48,12 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _fireRate = 0.5f;
 
+    [SerializeField]
+    private int _maxAmmo = 15;
+
+
     private int _score = 0;
-    private int _ammo = 15;
+    private int _ammo;
 
     private Vector3 playerMoveDirection = Vector3.zero;
     private float _nextFire = 0f;
@@ -67,6 +71,7 @@ public class Player : MonoBehaviour
     private bool _isShieldsUpActive;
     private bool _isLeftEngineOnFire;
     private bool _isRightEngineOnFire;
+
     private bool _isImmune;
     private Shields _shields;
 
@@ -86,7 +91,7 @@ public class Player : MonoBehaviour
         this._audioManager = GameObject.Find("Audio_Manager").GetComponent<AudioManager>();
         LogHelper.CheckForNull(_audioManager, nameof(_audioManager));
 
-        _ammo = 15;
+        _ammo = _maxAmmo;
         this._uiManager?.UpdateScore(_score);
         this._uiManager?.UpdateLives(_lives);
         this._uiManager?.UpdateAmmo(_ammo);
@@ -108,6 +113,14 @@ public class Player : MonoBehaviour
         _score += score;
         _uiManager?.UpdateScore(_score);
     }
+
+
+    public void CollectAmmo()
+    {
+        _ammo = _maxAmmo;
+        _uiManager?.UpdateAmmo(_ammo);
+    }
+
 
     public void CollectTrippleShot()
     {
