@@ -37,6 +37,9 @@ public class Player : MonoBehaviour
     private AudioSource _powerUpAudio;
 
     [SerializeField]
+    private AudioSource _emptyShot;
+
+    [SerializeField]
     private float _laserStartingOffset = 1f;
 
     [SerializeField]
@@ -46,6 +49,7 @@ public class Player : MonoBehaviour
     private float _fireRate = 0.5f;
 
     private int _score = 0;
+    private int _ammo = 15;
 
     private Vector3 playerMoveDirection = Vector3.zero;
     private float _nextFire = 0f;
@@ -82,8 +86,10 @@ public class Player : MonoBehaviour
         this._audioManager = GameObject.Find("Audio_Manager").GetComponent<AudioManager>();
         LogHelper.CheckForNull(_audioManager, nameof(_audioManager));
 
-        this._uiManager.UpdateScore(_score);
-        this._uiManager.UpdateLives(_lives);
+        _ammo = 15;
+        this._uiManager?.UpdateScore(_score);
+        this._uiManager?.UpdateLives(_lives);
+        this._uiManager?.UpdateAmmo(_ammo);
     }
 
     // Update is called once per frame
@@ -210,11 +216,22 @@ public class Player : MonoBehaviour
     {
         if (Time.time > _nextFire)
         {
-            if (_laserPrefab != null && _laserTrippleShotPrefab != null)
+            if (_ammo > 0)
             {
-                Instantiate(_isTrippleShotActive ? _laserTrippleShotPrefab : _laserPrefab, transform.position + Vector3.up * _laserStartingOffset, Quaternion.identity);
-                _laserAudio?.Play();
-                _nextFire = Time.time + _fireRate;
+                if (_laserPrefab != null && _laserTrippleShotPrefab != null)
+                {
+                    Instantiate(_isTrippleShotActive ? _laserTrippleShotPrefab : _laserPrefab, transform.position + Vector3.up * _laserStartingOffset, Quaternion.identity);
+                    _laserAudio?.Play();
+                    _nextFire = Time.time + _fireRate;
+                }
+
+                // assuming tripple shot only counts as 1
+                _ammo--;
+                _uiManager?.UpdateAmmo(_ammo);
+            }
+            else
+            {
+                _emptyShot.Play();
             }
         }
     }

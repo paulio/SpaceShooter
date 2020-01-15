@@ -8,6 +8,10 @@ public class UIManager : MonoBehaviour
     private Text _scoreText;
 
     [SerializeField]
+    private Text _ammoText;
+
+
+    [SerializeField]
     private Text _gameOverText;
 
     [SerializeField]
@@ -32,6 +36,19 @@ public class UIManager : MonoBehaviour
     public void UpdateScore(int score)
     {
         _scoreText.text = $"Score: {score.ToString("D3")}";
+    }
+
+    public void UpdateAmmo(int ammo)
+    {
+        _ammoText.text = $"Ammo: {ammo.ToString("D2")}";
+        if (ammo < 1)
+        {
+            _ammoText.color = Color.red;
+        }
+        else
+        {
+            _ammoText.color = Color.white;
+        }
     }
 
     public void UpdateLives(int lives)
