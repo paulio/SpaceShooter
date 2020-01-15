@@ -976,6 +976,7 @@ GameObject:
   - component: {fileID: 1155681178}
   - component: {fileID: 1155681177}
   - component: {fileID: 1155681179}
+  - component: {fileID: 1155681180}
   m_Layer: 0
   m_Name: Shields
   m_TagString: Untagged
@@ -1065,6 +1066,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1155681180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1155681176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3621ba5be6ad3ec44bbcd96a2f397101, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxLives: 3
 --- !u!1 &1172523428
 GameObject:
   m_ObjectHideFlags: 0
@@ -1221,12 +1235,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 5
-  _speedMultiplier: 2
+  _speedAccelerateMultiplier: 1.5
+  _speedPowerUpMultiplier: 2
   _laserPrefab: {fileID: 7445569070137521247, guid: 9883e73fac7df16498f0ef29cc0790aa,
     type: 3}
   _laserTrippleShotPrefab: {fileID: 3004931125729866475, guid: 8e17e2376d8b7cf46b7446db8200c897,
     type: 3}
-  _shields: {fileID: 1155681176}
+  _shieldsPrefab: {fileID: 8922137304551538848, guid: 337a892d0e271024faca34fc564aff90,
+    type: 3}
   _leftEngine: {fileID: 1655022314}
   _rightEngine: {fileID: 460048316}
   _laserAudio: {fileID: 1790941024}
@@ -2165,7 +2181,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dd495287e0a5ec4b8603f48ba793824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _delay: 3
+  _spawnWaveDelay: 3.5
+  _delayNextEnemy: 5
   _delayPowerup: 5
   _enemyPrefab: {fileID: 1536977373611609102, guid: a0f7f13191273cc4fb84579d32780434,
     type: 3}

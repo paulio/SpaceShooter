@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
     private GameObject _laserTrippleShotPrefab;
 
     [SerializeField]
-    private GameObject _shields;
+    private GameObject _shieldsChildComponent;
 
     [SerializeField]
     private GameObject _leftEngine;
@@ -57,12 +57,14 @@ public class Player : MonoBehaviour
     private const float MaxBoundaryPositiveY = 8f;
     private const float MinBoundaryPositiveY = -2.0f;
 
+
     private bool _isTrippleShotActive = false;
     private bool _isSpeedUpActive = false;
     private bool _isShieldsUpActive;
     private bool _isLeftEngineOnFire;
     private bool _isRightEngineOnFire;
     private bool _isImmune;
+    private Shields _shields;
 
     public int Score => this._score;
 
@@ -125,7 +127,14 @@ public class Player : MonoBehaviour
         {
             if (_isShieldsUpActive)
             {
-                ActivateShields(false);
+                if (_shields != null)
+                {
+                    _shields.TakeDamage();
+                    if (_shields.HasShieldDepleted())
+                    {
+                        ActivateShields(false);
+                    }
+                }
             }
             else
             {
@@ -187,8 +196,14 @@ public class Player : MonoBehaviour
     private void ActivateShields(bool isActive)
     {
         _isShieldsUpActive = isActive;
-        _shields?.SetActive(isActive);
+        _shieldsChildComponent?.SetActive(isActive);
         _powerUpAudio?.Play();
+        if (_shields == null && _shieldsChildComponent != null)
+        {
+            _shields = _shieldsChildComponent.GetComponent<Shields>();
+        }
+
+        _shields?.FullStrength();
     }
 
     private void FireLaser()
