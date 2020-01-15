@@ -18,15 +18,14 @@ public class Laser : MonoBehaviour
     private const float MaxBoundaryPositiveY = 8f;
     private const float MinBoundaryPositiveY = -2.0f;
 
+    public bool IsUpMissile => _isUpMissile;
+
 
     public void SetDownMissile()
     {
         _isUpMissile = false;
         _direction = Vector3.down;
     }
-
-
-    public bool IsUpMissile => _isUpMissile;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -47,7 +46,7 @@ public class Laser : MonoBehaviour
     void Update()
     {
         transform.Translate(_direction * Time.deltaTime * _speed);
-        if (transform.position.y >= MaxBoundaryPositiveY || transform.position.y < MinBoundaryPositiveY || transform.position.x < MinBoundaryPositiveX || transform.position.x > MaxBoundaryPositiveX)
+        if (IsOutsideOfGameBounds())
         {
             if (this.transform.parent != null)
             {
@@ -58,5 +57,10 @@ public class Laser : MonoBehaviour
                 Destroy(this.gameObject);
             }
         }
+    }
+
+    private bool IsOutsideOfGameBounds()
+    {
+        return transform.position.y >= MaxBoundaryPositiveY || transform.position.y < MinBoundaryPositiveY || transform.position.x < MinBoundaryPositiveX || transform.position.x > MaxBoundaryPositiveX;
     }
 }

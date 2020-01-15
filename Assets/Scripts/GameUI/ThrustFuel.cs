@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class ThrustFuel
 {
+    private const float FuelLowWarningLevel = 20f;
     private Image _thrustFuelImage;
     private float _thrustFuelImageMaxWidth;
     private Rect _thrustFuelImageDefaultRect;
@@ -18,10 +19,9 @@ public class ThrustFuel
 
     public void UpdateThrustFuel(float thrustFuel)
     {
-        Debug.Log($"thrustFuel {thrustFuel}");
         var fuelLeftAsWidth = (thrustFuel / _thrustFuelImageMaxWidth) * 100f;
         _thrustFuelImage.rectTransform.sizeDelta = new Vector2(fuelLeftAsWidth, _thrustFuelImageDefaultRect.height);
-        if (thrustFuel < 20f)
+        if (thrustFuel < FuelLowWarningLevel)
         {
             _thrustFuelImage.color = Color.red;
         }

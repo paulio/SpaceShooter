@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -55,7 +54,7 @@ public class Player : MonoBehaviour
     private int _maxAmmo = 15;
 
 
-    private int _score = 0;
+    private int _score;
     private Animator _mainCameraAnimator;
     private int _ammo;
 
@@ -82,9 +81,7 @@ public class Player : MonoBehaviour
     private Shields _shields;
     private bool _isMultiShotActive;
     private bool _canThrust = true;
-
-    public int Score => this._score;
-
+ 
     // Start is called before the first frame update
     void Start()
     {
@@ -135,6 +132,7 @@ public class Player : MonoBehaviour
     public void CollectHealth()
     {
         _lives = Mathf.Clamp(_lives + 1, 0, 3);
+        RepairAnEngine();
         _uiManager?.UpdateLives(_lives);
     }
 
@@ -185,6 +183,7 @@ public class Player : MonoBehaviour
                 {
                     print("Game over");
                     _audioManager?.PlayExplosion(transform.position);
+                    _mainCameraAnimator.enabled = false;
                     Destroy(this.gameObject);
                     _spawnManager?.OnPlayerDeath();
                 }
@@ -238,6 +237,20 @@ public class Player : MonoBehaviour
         {
             _rightEngine?.SetActive(true);
             _isRightEngineOnFire = true;
+        }
+    }
+
+    private void RepairAnEngine()
+    {
+        if (_isLeftEngineOnFire)
+        {
+            _leftEngine?.SetActive(false);
+            _isLeftEngineOnFire = false;
+        }
+        else if (_isRightEngineOnFire)
+        {
+            _rightEngine?.SetActive(false);
+            _isRightEngineOnFire = false;
         }
     }
 
@@ -302,6 +315,12 @@ public class Player : MonoBehaviour
         playerMoveDirection = playerMoveDirection * Time.deltaTime * _speed * (isAccelerating && _thrustFuel > 0f ? _speedAccelerateMultiplier : 1f);
         transform.Translate(playerMoveDirection);
 
+        UpdateThrustFuel(isAccelerating);
+        ClampBoundaries();
+    }
+
+    private void UpdateThrustFuel(bool isAccelerating)
+    {
         if (isAccelerating)
         {
             _thrustFuel = Mathf.Clamp(_thrustFuel - 0.5f, 0f, 100f);
@@ -317,8 +336,6 @@ public class Player : MonoBehaviour
         }
 
         _uiManager.UpdateThrustFuel(_thrustFuel);
-
-        ClampBoundaries();
     }
 
     private IEnumerator ThrustFuelCoolDownRoutine()

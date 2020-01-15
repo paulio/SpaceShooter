@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Shields : MonoBehaviour
 {
@@ -42,6 +40,7 @@ public class Shields : MonoBehaviour
 
     public bool HasShieldDepleted()
     {
+        print($"Shield {_shieldHits} of {_maxLives}");
         return _maxLives <= _shieldHits;
     }
 }
