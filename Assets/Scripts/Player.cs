@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -8,7 +7,10 @@ public class Player : MonoBehaviour
     private float _speed = 5f;
 
     [SerializeField]
-    private float _speedMultiplier = 2f;
+    private float _speedAccelerateMultiplier = 10.5f;
+
+    [SerializeField]
+    private float _speedPowerUpMultiplier = 2f;
 
     [SerializeField]
     private GameObject _laserPrefab;
@@ -17,7 +19,10 @@ public class Player : MonoBehaviour
     private GameObject _laserTrippleShotPrefab;
 
     [SerializeField]
-    private GameObject _shields;
+    private GameObject _laserMultiShotPrefab;
+
+    [SerializeField]
+    private GameObject _shieldsChildComponent;
 
     [SerializeField]
     private GameObject _leftEngine;
@@ -34,6 +39,9 @@ public class Player : MonoBehaviour
     private AudioSource _powerUpAudio;
 
     [SerializeField]
+    private AudioSource _emptyShot;
+
+    [SerializeField]
     private float _laserStartingOffset = 1f;
 
     [SerializeField]
@@ -42,7 +50,15 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _fireRate = 0.5f;
 
-    private int _score = 0;
+    [SerializeField]
+    private int _maxAmmo = 15;
+
+
+    private int _score;
+    private Animator _mainCameraAnimator;
+    private int _ammo;
+
+    private float _thrustFuel = 100f;
 
     private Vector3 playerMoveDirection = Vector3.zero;
     private float _nextFire = 0f;
@@ -54,15 +70,18 @@ public class Player : MonoBehaviour
     private const float MaxBoundaryPositiveY = 8f;
     private const float MinBoundaryPositiveY = -2.0f;
 
+
     private bool _isTrippleShotActive = false;
     private bool _isSpeedUpActive = false;
     private bool _isShieldsUpActive;
     private bool _isLeftEngineOnFire;
     private bool _isRightEngineOnFire;
+
     private bool _isImmune;
-
-    public int Score => this._score;
-
+    private Shields _shields;
+    private bool _isMultiShotActive;
+    private bool _canThrust = true;
+ 
     // Start is called before the first frame update
     void Start()
     {
@@ -77,8 +96,13 @@ public class Player : MonoBehaviour
         this._audioManager = GameObject.Find("Audio_Manager").GetComponent<AudioManager>();
         LogHelper.CheckForNull(_audioManager, nameof(_audioManager));
 
-        this._uiManager.UpdateScore(_score);
-        this._uiManager.UpdateLives(_lives);
+        this._mainCameraAnimator = Camera.main.GetComponent<Animator>();
+        LogHelper.CheckForNull(_mainCameraAnimator, nameof(_mainCameraAnimator));
+
+        _ammo = _maxAmmo;
+        this._uiManager?.UpdateScore(_score);
+        this._uiManager?.UpdateLives(_lives);
+        this._uiManager?.UpdateAmmo(_ammo);
     }
 
     // Update is called once per frame
@@ -98,9 +122,28 @@ public class Player : MonoBehaviour
         _uiManager?.UpdateScore(_score);
     }
 
+
+    public void CollectAmmo()
+    {
+        _ammo = _maxAmmo;
+        _uiManager?.UpdateAmmo(_ammo);
+    }
+
+    public void CollectHealth()
+    {
+        _lives = Mathf.Clamp(_lives + 1, 0, 3);
+        RepairAnEngine();
+        _uiManager?.UpdateLives(_lives);
+    }
+
     public void CollectTrippleShot()
     {
         StartCoroutine(TrippleShotPowerdown());
+    }
+
+    public void CollectMultiShot()
+    {
+        StartCoroutine(MultiShotPowerdown());
     }
 
     public void CollectSpeedUp()
@@ -120,9 +163,17 @@ public class Player : MonoBehaviour
     {
         if (!_isImmune)
         {
+            StartCoroutine(nameof(ShakeCameraRoutine));
             if (_isShieldsUpActive)
             {
-                ActivateShields(false);
+                if (_shields != null)
+                {
+                    _shields.TakeDamage();
+                    if (_shields.HasShieldDepleted())
+                    {
+                        ActivateShields(false);
+                    }
+                }
             }
             else
             {
@@ -132,6 +183,7 @@ public class Player : MonoBehaviour
                 {
                     print("Game over");
                     _audioManager?.PlayExplosion(transform.position);
+                    _mainCameraAnimator.enabled = false;
                     Destroy(this.gameObject);
                     _spawnManager?.OnPlayerDeath();
                 }
@@ -144,6 +196,13 @@ public class Player : MonoBehaviour
 
             StartCoroutine(StartImmunityRoutine());
         }
+    }
+
+    private IEnumerator ShakeCameraRoutine()
+    {
+        _mainCameraAnimator.enabled = true;
+        yield return new WaitForSeconds(0.2f);
+        _mainCameraAnimator.enabled = false;
     }
 
     private IEnumerator StartImmunityRoutine()
@@ -181,22 +240,61 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void RepairAnEngine()
+    {
+        if (_isLeftEngineOnFire)
+        {
+            _leftEngine?.SetActive(false);
+            _isLeftEngineOnFire = false;
+        }
+        else if (_isRightEngineOnFire)
+        {
+            _rightEngine?.SetActive(false);
+            _isRightEngineOnFire = false;
+        }
+    }
+
     private void ActivateShields(bool isActive)
     {
         _isShieldsUpActive = isActive;
-        _shields?.SetActive(isActive);
+        _shieldsChildComponent?.SetActive(isActive);
         _powerUpAudio?.Play();
+        if (_shields == null && _shieldsChildComponent != null)
+        {
+            _shields = _shieldsChildComponent.GetComponent<Shields>();
+        }
+
+        _shields?.FullStrength();
     }
 
     private void FireLaser()
     {
         if (Time.time > _nextFire)
         {
-            if (_laserPrefab != null && _laserTrippleShotPrefab != null)
+            if (_ammo > 0)
             {
-                Instantiate(_isTrippleShotActive ? _laserTrippleShotPrefab : _laserPrefab, transform.position + Vector3.up * _laserStartingOffset, Quaternion.identity);
-                _laserAudio?.Play();
-                _nextFire = Time.time + _fireRate;
+                if (_laserPrefab != null && _laserTrippleShotPrefab != null && _laserMultiShotPrefab != null)
+                {
+                    if (_isMultiShotActive)
+                    {
+                        Instantiate(_laserMultiShotPrefab, transform.position + Vector3.up * _laserStartingOffset, Quaternion.identity);
+                    }
+                    else
+                    {
+                        Instantiate(_isTrippleShotActive ? _laserTrippleShotPrefab : _laserPrefab, transform.position + Vector3.up * _laserStartingOffset, Quaternion.identity);
+                    }
+
+                    _laserAudio?.Play();
+                    _nextFire = Time.time + _fireRate;
+                }
+
+                // assuming tripple shot only counts as 1
+                _ammo--;
+                _uiManager?.UpdateAmmo(_ammo);
+            }
+            else
+            {
+                _emptyShot.Play();
             }
         }
     }
@@ -206,12 +304,46 @@ public class Player : MonoBehaviour
         var horizontalInput = Input.GetAxis("Horizontal");
         var verticalInput = Input.GetAxis("Vertical");
 
+        var isAccelerating = false;
+        if (_canThrust)
+        {
+            isAccelerating = Input.GetKey(KeyCode.LeftShift);
+        }
+
         playerMoveDirection.x = horizontalInput;
         playerMoveDirection.y = verticalInput;
-        playerMoveDirection = playerMoveDirection * Time.deltaTime * _speed;
-
+        playerMoveDirection = playerMoveDirection * Time.deltaTime * _speed * (isAccelerating && _thrustFuel > 0f ? _speedAccelerateMultiplier : 1f);
         transform.Translate(playerMoveDirection);
+
+        UpdateThrustFuel(isAccelerating);
         ClampBoundaries();
+    }
+
+    private void UpdateThrustFuel(bool isAccelerating)
+    {
+        if (isAccelerating)
+        {
+            _thrustFuel = Mathf.Clamp(_thrustFuel - 0.5f, 0f, 100f);
+        }
+        else
+        {
+            _thrustFuel = Mathf.Clamp(_thrustFuel + 0.05f, 0f, 100f);
+        }
+
+        if (_thrustFuel == 0)
+        {
+            StartCoroutine(nameof(ThrustFuelCoolDownRoutine));
+        }
+
+        _uiManager.UpdateThrustFuel(_thrustFuel);
+    }
+
+    private IEnumerator ThrustFuelCoolDownRoutine()
+    {
+        _canThrust = false;
+        const float DelayAfterEmptyFuel = 8f;
+        yield return new WaitForSeconds(DelayAfterEmptyFuel);
+        _canThrust = true;
     }
 
     private void ClampBoundaries()
@@ -245,12 +377,21 @@ public class Player : MonoBehaviour
         _isTrippleShotActive = false;
     }
 
+    IEnumerator MultiShotPowerdown()
+    {
+        _isMultiShotActive = true;
+        _powerUpAudio?.Play();
+        const float multiShotLifeTime = 5f;
+        yield return new WaitForSeconds(multiShotLifeTime);
+        _isMultiShotActive = false;
+    }
+
     IEnumerator SpeedUpPowerdown()
     {
         _isSpeedUpActive = true;
         _powerUpAudio?.Play();
         var currentSpeed = _speed;
-        this._speed *= _speedMultiplier;
+        this._speed *= _speedPowerUpMultiplier;
         const float speedUpLifeTime = 10f;
         yield return new WaitForSeconds(speedUpLifeTime);
         _isSpeedUpActive = false;

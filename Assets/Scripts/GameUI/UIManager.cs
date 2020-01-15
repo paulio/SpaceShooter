@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,9 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField]
     private Text _scoreText;
+
+    [SerializeField]
+    private Text _ammoText;
 
     [SerializeField]
     private Text _gameOverText;
@@ -16,10 +20,14 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Image _livesImage;
 
+    [SerializeField]
+    private Image _thrustFuelImage;
 
     [SerializeField]
     private Sprite[] livesSprites;
+
     private GameManager _gameManager;
+    private ThrustFuel _thrustFuel;
 
     // Start is called before the first frame update
     void Start()
@@ -27,11 +35,30 @@ public class UIManager : MonoBehaviour
         _scoreText.text = "Score: 000";
         _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
         LogHelper.CheckForNull(_gameManager, nameof(_gameManager));
+        _thrustFuel = new ThrustFuel(_thrustFuelImage);
     }
 
     public void UpdateScore(int score)
     {
         _scoreText.text = $"Score: {score.ToString("D3")}";
+    }
+
+    public void UpdateAmmo(int ammo)
+    {
+        _ammoText.text = $"Ammo: {ammo.ToString("D2")}";
+        if (ammo < 1)
+        {
+            _ammoText.color = Color.red;
+        }
+        else
+        {
+            _ammoText.color = Color.white;
+        }
+    }
+
+    public void UpdateThrustFuel(float thrustFuel)
+    {
+        _thrustFuel.UpdateThrustFuel(thrustFuel);
     }
 
     public void UpdateLives(int lives)

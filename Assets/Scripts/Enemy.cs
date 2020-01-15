@@ -11,13 +11,13 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private GameObject _laserPrefab;
 
-
     private Player _player;
     private int _isDestroyedHash;
     private Animator _animator;
     private BoxCollider2D _boxCollider;
     private AudioManager _audioManager;
     private float _nextFire;
+
     private const float MaxBoundaryPositiveX = 9f;
     private const float MinBoundaryPositiveX = -9f;
     private const float MaxBoundaryPositiveY = 8f;
@@ -60,16 +60,24 @@ public class Enemy : MonoBehaviour
             if (_boxCollider.enabled)
             {
                 _nextFire += Random.Range(2f, 8f);
-                print("Enemy firing missile");
                 if (_laserPrefab != null)
                 {
-                    var laserObject = Instantiate(_laserPrefab, transform.position + Vector3.up, Quaternion.identity);
+                    FireDoubleLaser();
                 }
             }
         }
     }
 
-    
+    private void FireDoubleLaser()
+    {
+        var laserObject = Instantiate(_laserPrefab, transform.position + Vector3.up, Quaternion.identity);
+        var lasers = laserObject.GetComponentsInChildren<Laser>();
+        for (int laserIndex = 0; laserIndex < lasers.Length; laserIndex++)
+        {
+            lasers[laserIndex].SetDownMissile();
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -95,8 +103,11 @@ public class Enemy : MonoBehaviour
         _boxCollider.enabled = false;
         _animator?.SetTrigger(_isDestroyedHash);
         _audioManager?.PlayExplosion(transform.position);
-        _speed *= 0.9f;
-        Destroy(this.gameObject, 2f);
+        const float DestroyedMomentumeSpeedReduction = 0.9f;
+        const float DestroyedTimeOnScreen = 2f;
+        
+        _speed *= DestroyedMomentumeSpeedReduction;
+        Destroy(this.gameObject, DestroyedTimeOnScreen);
     }
 
     private static float SpawnXPoint()

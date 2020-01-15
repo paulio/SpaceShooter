@@ -72,8 +72,24 @@ public class SpawnManager : MonoBehaviour
             yield return new WaitForSeconds(Random.Range(MinimumPowerupDelay, Mathf.Max(_delayPowerup, DefaultMaximumPowerupDelayFloor)));
             if (!_hasStoppedSpawning)
             {
-                var nextPowerUp = _powerups[Random.Range(0, _powerups.Length)];
-                Instantiate(nextPowerUp);
+                
+                GameObject nextPowerUp = null;
+                int attemptCount = 4;
+                while(nextPowerUp == null && attemptCount > 0)
+                {
+                    nextPowerUp = _powerups[Random.Range(0, _powerups.Length)];
+                    var powerUp = nextPowerUp.GetComponent<PowerUp>();
+                    if (!powerUp.IsAvailableDueToRarity())
+                    {
+                        powerUp = null;
+                        attemptCount--;
+                    }
+                }
+
+                if (nextPowerUp != null)
+                {
+                    Instantiate(nextPowerUp);
+                }
             }
         }
     }

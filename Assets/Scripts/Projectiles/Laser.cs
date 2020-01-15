@@ -7,17 +7,25 @@ public class Laser : MonoBehaviour
 
     [SerializeField]
     private bool _isUpMissile = true;
+
+    [SerializeField]
+    private Vector3 _direction = Vector3.up;
+
     private Player _player;
+
+    private const float MaxBoundaryPositiveX = 9f;
+    private const float MinBoundaryPositiveX = -9f;
     private const float MaxBoundaryPositiveY = 8f;
     private const float MinBoundaryPositiveY = -2.0f;
+
+    public bool IsUpMissile => _isUpMissile;
+
 
     public void SetDownMissile()
     {
         _isUpMissile = false;
+        _direction = Vector3.down;
     }
-
-
-    public bool IsUpMissile => _isUpMissile;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -37,8 +45,8 @@ public class Laser : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Translate((_isUpMissile ? Vector3.up : Vector3.down) * Time.deltaTime * _speed);
-        if (transform.position.y >= MaxBoundaryPositiveY || transform.position.y < MinBoundaryPositiveY)
+        transform.Translate(_direction * Time.deltaTime * _speed);
+        if (IsOutsideOfGameBounds())
         {
             if (this.transform.parent != null)
             {
@@ -49,5 +57,10 @@ public class Laser : MonoBehaviour
                 Destroy(this.gameObject);
             }
         }
+    }
+
+    private bool IsOutsideOfGameBounds()
+    {
+        return transform.position.y >= MaxBoundaryPositiveY || transform.position.y < MinBoundaryPositiveY || transform.position.x < MinBoundaryPositiveX || transform.position.x > MaxBoundaryPositiveX;
     }
 }
