@@ -121,6 +121,11 @@ public class Player : MonoBehaviour
         _uiManager?.UpdateAmmo(_ammo);
     }
 
+    public void CollectHealth()
+    {
+        _lives++;
+        _uiManager?.UpdateLives(_lives);
+    }
 
     public void CollectTrippleShot()
     {

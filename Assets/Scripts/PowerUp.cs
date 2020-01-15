@@ -7,7 +7,8 @@ public enum PowerUpType
     TrippleShot = 0,
     Speed = 1,
     Shield = 2,
-    Ammo = 3
+    Ammo = 3,
+    Health = 4
 }
 
 public class PowerUp : MonoBehaviour
@@ -61,6 +62,9 @@ public class PowerUp : MonoBehaviour
                         break;
                     case PowerUpType.Ammo:
                         player.CollectAmmo();
+                        break;
+                    case PowerUpType.Health:
+                        player.CollectHealth();
                         break;
                     default:
                         print("Unknown powerup");
