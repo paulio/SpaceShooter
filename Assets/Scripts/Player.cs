@@ -20,6 +20,9 @@ public class Player : MonoBehaviour
     private GameObject _laserTrippleShotPrefab;
 
     [SerializeField]
+    private GameObject _laserMultiShotPrefab;
+
+    [SerializeField]
     private GameObject _shieldsChildComponent;
 
     [SerializeField]
@@ -74,6 +77,7 @@ public class Player : MonoBehaviour
 
     private bool _isImmune;
     private Shields _shields;
+    private bool _isMultiShotActive;
 
     public int Score => this._score;
 
@@ -123,13 +127,18 @@ public class Player : MonoBehaviour
 
     public void CollectHealth()
     {
-        _lives++;
+        _lives = Mathf.Clamp(_lives + 1, 0, 3);
         _uiManager?.UpdateLives(_lives);
     }
 
     public void CollectTrippleShot()
     {
         StartCoroutine(TrippleShotPowerdown());
+    }
+
+    public void CollectMultiShot()
+    {
+        StartCoroutine(MultiShotPowerdown());
     }
 
     public void CollectSpeedUp()
@@ -236,9 +245,17 @@ public class Player : MonoBehaviour
         {
             if (_ammo > 0)
             {
-                if (_laserPrefab != null && _laserTrippleShotPrefab != null)
+                if (_laserPrefab != null && _laserTrippleShotPrefab != null && _laserMultiShotPrefab != null)
                 {
-                    Instantiate(_isTrippleShotActive ? _laserTrippleShotPrefab : _laserPrefab, transform.position + Vector3.up * _laserStartingOffset, Quaternion.identity);
+                    if (_isMultiShotActive)
+                    {
+                        Instantiate(_laserMultiShotPrefab, transform.position + Vector3.up * _laserStartingOffset, Quaternion.identity);
+                    }
+                    else
+                    {
+                        Instantiate(_isTrippleShotActive ? _laserTrippleShotPrefab : _laserPrefab, transform.position + Vector3.up * _laserStartingOffset, Quaternion.identity);
+                    }
+
                     _laserAudio?.Play();
                     _nextFire = Time.time + _fireRate;
                 }
@@ -297,6 +314,15 @@ public class Player : MonoBehaviour
         const float trippleShotLifeTime = 5f;
         yield return new WaitForSeconds(trippleShotLifeTime);
         _isTrippleShotActive = false;
+    }
+
+    IEnumerator MultiShotPowerdown()
+    {
+        _isMultiShotActive = true;
+        _powerUpAudio?.Play();
+        const float multiShotLifeTime = 5f;
+        yield return new WaitForSeconds(multiShotLifeTime);
+        _isMultiShotActive = false;
     }
 
     IEnumerator SpeedUpPowerdown()

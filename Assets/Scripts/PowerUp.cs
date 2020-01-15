@@ -8,13 +8,18 @@ public enum PowerUpType
     Speed = 1,
     Shield = 2,
     Ammo = 3,
-    Health = 4
+    Health = 4,
+    MultiShot = 5
 }
 
 public class PowerUp : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 3f;
+
+    [SerializeField]
+    private float _rarityPercentage = 80f;
+
 
     [SerializeField]
     private PowerUpType _powerUpType = PowerUpType.None;
@@ -24,6 +29,11 @@ public class PowerUp : MonoBehaviour
     private const float MinBoundaryPositiveY = -2.0f;
     private const float MaxBoundaryPositiveY = 8f;
 
+
+    public bool IsAvailableDueToRarity()
+    {
+        return Random.Range(1f, 100f) > _rarityPercentage;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -53,6 +63,9 @@ public class PowerUp : MonoBehaviour
                 {
                     case PowerUpType.TrippleShot:
                         player.CollectTrippleShot();
+                        break;
+                    case PowerUpType.MultiShot:
+                        player.CollectMultiShot();
                         break;
                     case PowerUpType.Speed:
                         player.CollectSpeedUp();

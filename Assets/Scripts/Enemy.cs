@@ -60,10 +60,14 @@ public class Enemy : MonoBehaviour
             if (_boxCollider.enabled)
             {
                 _nextFire += Random.Range(2f, 8f);
-                print("Enemy firing missile");
                 if (_laserPrefab != null)
                 {
                     var laserObject = Instantiate(_laserPrefab, transform.position + Vector3.up, Quaternion.identity);
+                    var lasers = laserObject.GetComponentsInChildren<Laser>();
+                    for(int laserIndex = 0; laserIndex < lasers.Length; laserIndex++)
+                    {
+                        lasers[laserIndex].SetDownMissile();
+                    }
                 }
             }
         }
