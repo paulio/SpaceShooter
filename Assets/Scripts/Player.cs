@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -37,6 +38,9 @@ public class Player : MonoBehaviour
 
     [SerializeField]
     private AudioSource _powerUpAudio;
+
+    [SerializeField]
+    private AudioSource _powerDownAudio;
 
     [SerializeField]
     private AudioSource _emptyShot;
@@ -79,6 +83,7 @@ public class Player : MonoBehaviour
 
     private bool _isImmune;
     private Shields _shields;
+
     private bool _isMultiShotActive;
     private bool _canThrust = true;
  
@@ -152,6 +157,12 @@ public class Player : MonoBehaviour
     {
         StartCoroutine(SpeedUpPowerdown());
     }
+
+    public void CollectSlowDown()
+    {
+        StartCoroutine(SlowDownPowerdown());
+    }
+
 
     public void CollectShields()
     {
@@ -386,6 +397,17 @@ public class Player : MonoBehaviour
         const float multiShotLifeTime = 5f;
         yield return new WaitForSeconds(multiShotLifeTime);
         _isMultiShotActive = false;
+    }
+
+    IEnumerator SlowDownPowerdown()
+    {
+        _powerDownAudio?.Play();
+        var currentSpeed = _speed;
+        const float slowDownMultiplier = 0.25f;
+        this._speed *= slowDownMultiplier;
+        const float slowDownLifeTime = 20f;
+        yield return new WaitForSeconds(slowDownLifeTime);
+        _speed = currentSpeed;
     }
 
     IEnumerator SpeedUpPowerdown()
