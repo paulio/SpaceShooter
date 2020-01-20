@@ -102,7 +102,7 @@ public class Player : MonoBehaviour
         _ammo = _maxAmmo;
         this._uiManager?.UpdateScore(_score);
         this._uiManager?.UpdateLives(_lives);
-        this._uiManager?.UpdateAmmo(_ammo);
+        this._uiManager?.UpdateAmmo(_ammo, _maxAmmo);
     }
 
     // Update is called once per frame
@@ -125,12 +125,14 @@ public class Player : MonoBehaviour
 
     public void CollectAmmo()
     {
+        _powerUpAudio?.Play();
         _ammo = _maxAmmo;
-        _uiManager?.UpdateAmmo(_ammo);
+        _uiManager?.UpdateAmmo(_ammo, _maxAmmo);
     }
 
     public void CollectHealth()
     {
+        _powerUpAudio?.Play();
         _lives = Mathf.Clamp(_lives + 1, 0, 3);
         RepairAnEngine();
         _uiManager?.UpdateLives(_lives);
@@ -290,7 +292,7 @@ public class Player : MonoBehaviour
 
                 // assuming tripple shot only counts as 1
                 _ammo--;
-                _uiManager?.UpdateAmmo(_ammo);
+                _uiManager?.UpdateAmmo(_ammo, _maxAmmo);
             }
             else
             {
