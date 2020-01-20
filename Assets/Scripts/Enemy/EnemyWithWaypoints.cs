@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EnemyWithWaypoints : Enemy
 {
     private Waypoints _waypoints;
-
     private int _currentWaypoint = -1;
     private Vector3 _currentDirection = Vector3.zero;
     private Vector3 _targetPosition = Vector3.zero;
@@ -25,7 +21,7 @@ public class EnemyWithWaypoints : Enemy
         }
     }
 
-    public override void Move(bool isAlive)
+    protected override void Move(bool isAlive)
     {
         if (isAlive)
         {
@@ -39,7 +35,8 @@ public class EnemyWithWaypoints : Enemy
             var moveDirection = _currentDirection * Time.deltaTime * _speed;
             transform.Translate(moveDirection);
 
-            if (_currentWaypoint < _waypoints.GetWaypoints.Length - 1 && Vector3.Distance(transform.position, _targetPosition) < 1f)
+            const float nearEnoughToTargetDistance = 1f;
+            if (_currentWaypoint < _waypoints.GetWaypoints.Length - 1 && Vector3.Distance(transform.position, _targetPosition) < nearEnoughToTargetDistance)
             {
                 SetNextWaypoint();
             }

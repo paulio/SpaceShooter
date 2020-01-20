@@ -8,7 +8,6 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private float _damage = 1f;
 
-
     [SerializeField]
     private GameObject _laserPrefab;
 
@@ -61,7 +60,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public virtual void Move(bool isAlive)
+    protected virtual void Move(bool isAlive)
     {
         var moveDirection = Vector3.down * Time.deltaTime * _speed;
         transform.Translate(moveDirection);
@@ -70,14 +69,6 @@ public class Enemy : MonoBehaviour
         {
             ClampBoundaries(moveDirection);
         }
-
-        ////if (transform.position.y <= MinBoundaryPositiveX)
-        ////{
-        ////    if (isAlive)
-        ////    {
-        ////        SetStartPosition();
-        ////    }
-        ////}
     }
 
     protected void ClampBoundaries(Vector3 moveDirection)
