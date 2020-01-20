@@ -3,10 +3,11 @@
 public class Enemy : MonoBehaviour
 {
     [SerializeField]
-    private float _speed = 4f;
+    protected float _speed = 4f;
 
     [SerializeField]
     private float _damage = 1f;
+
 
     [SerializeField]
     private GameObject _laserPrefab;
@@ -17,16 +18,15 @@ public class Enemy : MonoBehaviour
     private BoxCollider2D _boxCollider;
     private AudioManager _audioManager;
     private float _nextFire;
-
     private const float MaxBoundaryPositiveX = 9f;
     private const float MinBoundaryPositiveX = -9f;
     private const float MaxBoundaryPositiveY = 8f;
-    private const float MinBoundaryPositiveY = -2.0f;
+    private const float MinBoundaryPositiveY = -4.0f;
 
     // Start is called before the first frame update
     void Start()
     {
-        this.transform.position = new Vector3(SpawnXPoint(), MaxBoundaryPositiveY, 0);
+        SetStartPosition();
         this._player = GameObject.Find("Player").GetComponent<Player>();
         LogHelper.CheckForNull(_player, nameof(_player));
 
@@ -46,14 +46,7 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.transform.Translate(Vector3.down * Time.deltaTime * _speed);
-        if (this.transform.position.y <= MinBoundaryPositiveY)
-        {
-            if (_boxCollider.enabled)
-            {
-                this.transform.position = new Vector3(SpawnXPoint(), MaxBoundaryPositiveY, 0);
-            }
-        }
+        Move(_boxCollider.enabled);
 
         if (Time.time > _nextFire)
         {
@@ -66,6 +59,61 @@ public class Enemy : MonoBehaviour
                 }
             }
         }
+    }
+
+    public virtual void Move(bool isAlive)
+    {
+        var moveDirection = Vector3.down * Time.deltaTime * _speed;
+        transform.Translate(moveDirection);
+
+        if (isAlive)
+        {
+            ClampBoundaries(moveDirection);
+        }
+
+        ////if (transform.position.y <= MinBoundaryPositiveX)
+        ////{
+        ////    if (isAlive)
+        ////    {
+        ////        SetStartPosition();
+        ////    }
+        ////}
+    }
+
+    protected void ClampBoundaries(Vector3 moveDirection)
+    {
+        var clampX = Mathf.Clamp(transform.position.x, MinBoundaryPositiveX, MaxBoundaryPositiveX);
+        var clampY = Mathf.Clamp(transform.position.y, MinBoundaryPositiveY, MaxBoundaryPositiveY);
+
+        if (clampX != moveDirection.x || clampY != moveDirection.y)
+        {
+            // if we are at the max/min X then wrap around
+            if (clampX == MaxBoundaryPositiveX)
+            {
+                clampX = MinBoundaryPositiveX + 1f;
+            }
+
+            if (clampX == MinBoundaryPositiveX)
+            {
+                clampX = MaxBoundaryPositiveX - 1f;
+            }
+
+            if (clampY == MinBoundaryPositiveY)
+            {
+                clampY = MaxBoundaryPositiveY;
+            }
+
+            transform.position = new Vector3(clampX, clampY, 0);
+        }
+        else
+        {
+            print("no clamp");
+        }
+    }
+
+    private void SetStartPosition()
+    {
+        transform.position = new Vector3(SpawnXPoint(), MaxBoundaryPositiveY, 0);
     }
 
     private void FireDoubleLaser()

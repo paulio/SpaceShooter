@@ -17,6 +17,9 @@ public class SpawnManager : MonoBehaviour
     private GameObject _enemyPrefab;
 
     [SerializeField]
+    private GameObject _enemyWithWaypointsPrefab;
+
+    [SerializeField]
     private GameObject _asteroidPrefab;
 
 
@@ -25,6 +28,9 @@ public class SpawnManager : MonoBehaviour
 
     [SerializeField]
     private GameObject[] _powerups;
+
+    [SerializeField]
+    private Waypoints[] _waypointGroups;
 
     private bool _hasStoppedSpawning;
 
@@ -37,6 +43,7 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         LogHelper.CheckForNull(_asteroidPrefab, nameof(_asteroidPrefab));
+
         if (_asteroidPrefab != null)
         {
             Instantiate(_asteroidPrefab, _enemyContainer.transform);
@@ -99,7 +106,17 @@ public class SpawnManager : MonoBehaviour
         yield return new WaitForSeconds(_spawnWaveDelay);
         while (!_hasStoppedSpawning)
         {
-            Instantiate(_enemyPrefab, _enemyContainer.transform);
+            var isNextEnemyWaypointer = Random.Range(0f, 100f) > 70f;
+            var nextEnemyPrefab = isNextEnemyWaypointer ? _enemyWithWaypointsPrefab : _enemyPrefab;
+            var enemy = Instantiate(nextEnemyPrefab, _enemyContainer.transform);
+            if (isNextEnemyWaypointer)
+            {
+                var waypointEnemy = enemy.GetComponent<EnemyWithWaypoints>();
+                var waypointType = Random.Range(0, _waypointGroups.Length);
+                print($"Next Waypoint pattern {waypointType}");
+                waypointEnemy.Waypoints = _waypointGroups[waypointType];
+            }
+
             yield return new WaitForSeconds(_delayNextEnemy);
         }
     }
