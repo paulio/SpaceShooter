@@ -23,6 +23,9 @@ public class SpawnManager : MonoBehaviour
     private GameObject _enemyWithWaypointsPrefab;
 
     [SerializeField]
+    private GameObject _enemyWithBeamPrefab;
+
+    [SerializeField]
     private GameObject _asteroidPrefab;
 
 
@@ -129,7 +132,6 @@ public class SpawnManager : MonoBehaviour
         while (!_hasStoppedSpawning)
         {
             _currentSubWaveIndex++;
-            print($"Wave {_currentWave} Sub Wave {_currentSubWaveIndex}");
             if (_currentSubWaveIndex >= _currentWave.Waves.Length - 1)
             {
                 yield return new WaitForSeconds(_delayNextEnemy);
@@ -156,7 +158,10 @@ public class SpawnManager : MonoBehaviour
                 switch (enemyDefinition.EnemyType)
                 {
                     case EnemyType.WaypointFollower:
-                        enemy = CreateWaypointFollowerEnemy();
+                        enemy = CreateWaypointFollowerEnemy(_enemyWithWaypointsPrefab);
+                        break;
+                    case EnemyType.LaserBeam:
+                        enemy = CreateWaypointFollowerEnemy(_enemyWithBeamPrefab);
                         break;
                     default:
                         enemy = Instantiate(_enemyPrefab, _enemyContainer.transform);
@@ -166,12 +171,11 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    private GameObject CreateWaypointFollowerEnemy()
+    private GameObject CreateWaypointFollowerEnemy(GameObject enemyPrefab)
     {
-        GameObject enemy = Instantiate(_enemyWithWaypointsPrefab, _enemyContainer.transform);
+        GameObject enemy = Instantiate(enemyPrefab, _enemyContainer.transform);
         var waypointEnemy = enemy.GetComponent<EnemyWithWaypoints>();
         var waypointType = UnityEngine.Random.Range(0, _waypointGroups.Length);
-        print($"Next Waypoint pattern {waypointType}");
         waypointEnemy.Waypoints = _waypointGroups[waypointType];
         return enemy;
     }

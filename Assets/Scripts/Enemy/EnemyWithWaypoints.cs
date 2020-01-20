@@ -2,6 +2,7 @@
 
 public class EnemyWithWaypoints : Enemy
 {
+    [SerializeField]
     private Waypoints _waypoints;
     private int _currentWaypoint = -1;
     private Vector3 _currentDirection = Vector3.zero;
@@ -21,6 +22,8 @@ public class EnemyWithWaypoints : Enemy
         }
     }
 
+    protected int CurrentWaypoint => _currentWaypoint;
+
     protected override void Move(bool isAlive)
     {
         if (isAlive)
@@ -36,20 +39,29 @@ public class EnemyWithWaypoints : Enemy
             transform.Translate(moveDirection);
 
             const float nearEnoughToTargetDistance = 1f;
-            if (_currentWaypoint < _waypoints.GetWaypoints.Length - 1 && Vector3.Distance(transform.position, _targetPosition) < nearEnoughToTargetDistance)
+            var distanceToGoal = Vector3.Distance(transform.position, _targetPosition);
+            if (_currentWaypoint < _waypoints.GetWaypoints.Length - 1 && distanceToGoal < nearEnoughToTargetDistance)
             {
                 SetNextWaypoint();
             }
 
-            ClampBoundaries(moveDirection);
+            if (ClampBoundaries(moveDirection))
+            {
+                CalculateDirection();
+            }
         }
     }
 
-    private void SetNextWaypoint()
+    protected virtual void SetNextWaypoint()
     {
         _currentWaypoint = Mathf.Clamp(_currentWaypoint + 1, 0, _waypoints.GetWaypoints.Length - 1);
         _targetPosition = _waypoints.GetWaypoints[_currentWaypoint].position;
         _targetPosition.x += _deltaRelativeX;
-        _currentDirection = _targetPosition - transform.position;
+        CalculateDirection();
+    }
+
+    private void CalculateDirection()
+    {
+        _currentDirection = Vector3.Normalize(_targetPosition - transform.position);
     }
 }

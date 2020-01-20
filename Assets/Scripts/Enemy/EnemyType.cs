@@ -3,6 +3,7 @@
     public enum EnemyType
     {
         Basic,
-        WaypointFollower
+        WaypointFollower,
+        LaserBeam
     }
 }

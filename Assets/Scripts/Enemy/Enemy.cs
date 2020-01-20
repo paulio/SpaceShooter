@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Enemy;
+using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
@@ -22,6 +23,9 @@ public class Enemy : MonoBehaviour
     private const float MaxBoundaryPositiveY = 8f;
     private const float MinBoundaryPositiveY = -4.0f;
 
+
+    protected GameObject LaserPrefab => _laserPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,6 +44,7 @@ public class Enemy : MonoBehaviour
         LogHelper.CheckForNull(_audioManager, nameof(_audioManager));
 
         _nextFire = Time.time + Random.Range(0.5f, 3f);
+        print("Enemy started");
     }
 
     // Update is called once per frame
@@ -54,7 +59,7 @@ public class Enemy : MonoBehaviour
                 _nextFire += Random.Range(2f, 8f);
                 if (_laserPrefab != null)
                 {
-                    FireDoubleLaser();
+                    Fire();
                 }
             }
         }
@@ -71,8 +76,9 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    protected void ClampBoundaries(Vector3 moveDirection)
+    protected bool ClampBoundaries(Vector3 moveDirection)
     {
+        var hasClamped = false;
         var clampX = Mathf.Clamp(transform.position.x, MinBoundaryPositiveX, MaxBoundaryPositiveX);
         var clampY = Mathf.Clamp(transform.position.y, MinBoundaryPositiveY, MaxBoundaryPositiveY);
 
@@ -82,16 +88,19 @@ public class Enemy : MonoBehaviour
             if (clampX == MaxBoundaryPositiveX)
             {
                 clampX = MinBoundaryPositiveX + 1f;
+                hasClamped = true;
             }
 
             if (clampX == MinBoundaryPositiveX)
             {
                 clampX = MaxBoundaryPositiveX - 1f;
+                hasClamped = true;
             }
 
             if (clampY == MinBoundaryPositiveY)
             {
                 clampY = MaxBoundaryPositiveY;
+                hasClamped = true;
             }
 
             transform.position = new Vector3(clampX, clampY, 0);
@@ -100,6 +109,8 @@ public class Enemy : MonoBehaviour
         {
             print("no clamp");
         }
+
+        return hasClamped;
     }
 
     private void SetStartPosition()
@@ -107,7 +118,7 @@ public class Enemy : MonoBehaviour
         transform.position = new Vector3(SpawnXPoint(), MaxBoundaryPositiveY, 0);
     }
 
-    private void FireDoubleLaser()
+    protected virtual void Fire()
     {
         var laserObject = Instantiate(_laserPrefab, transform.position + Vector3.up, Quaternion.identity);
         var lasers = laserObject.GetComponentsInChildren<Laser>();
@@ -151,6 +162,6 @@ public class Enemy : MonoBehaviour
 
     private static float SpawnXPoint()
     {
-        return Random.Range(MinBoundaryPositiveX, MaxBoundaryPositiveX);
+        return MaxBoundaryPositiveX / 2f;// Random.Range(MinBoundaryPositiveX, MaxBoundaryPositiveX);
     }
 }
