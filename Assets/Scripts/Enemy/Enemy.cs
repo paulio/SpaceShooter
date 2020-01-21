@@ -17,7 +17,14 @@ public class Enemy : MonoBehaviour
     private GameObject _shieldsChildComponent;
 
     [SerializeField]
+    private ProximityDetector _proximityChildComponent;
+
+
+    [SerializeField]
     private float _percentageChanceOfShields = 20f;
+
+    [SerializeField]
+    private float _percentageChanceOfAggressive = 20f;
 
     private Player _player;
     private int _isDestroyedHash;
@@ -29,6 +36,8 @@ public class Enemy : MonoBehaviour
 
     private float _nextFire;
     private Shields _shields;
+    private bool _isAggressive;
+    private bool _isRamPlayer;
     private const float MaxBoundaryPositiveX = 9f;
     private const float MinBoundaryPositiveX = -9f;
     private const float MaxBoundaryPositiveY = 8f;
@@ -58,13 +67,22 @@ public class Enemy : MonoBehaviour
 
         if (_shieldsChildComponent != null)
         {
-            _hasShields = UnityEngine.Random.Range(0f, 100f) > 100f-_percentageChanceOfShields;
-
+            _hasShields = UnityEngine.Random.Range(0f, 100f) > 100f -_percentageChanceOfShields;
             if (_hasShields)
             {
                 _shields = _shieldsChildComponent.GetComponent<Shields>();
                 _shields.Initialize(2);
                 ActivateShields(true);
+            }
+        }
+
+        if (_proximityChildComponent != null)
+        {
+            _isAggressive = UnityEngine.Random.Range(0f, 100f) > 100f - _percentageChanceOfAggressive;
+            if (_isAggressive)
+            {
+                _proximityChildComponent.Initialize(OnProximityDetected);
+                _proximityChildComponent.enabled = true;
             }
         }
     }
@@ -89,7 +107,25 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Move(bool isAlive)
     {
-        var moveDirection = Vector3.down * Time.deltaTime * _speed;
+        Vector3 moveDirection;
+        if (_isRamPlayer)
+        {
+            moveDirection = Vector3.down * Time.deltaTime * _speed;
+            if (_player.transform.position.x < transform.position.x)
+            {
+                moveDirection += Vector3.left * Time.deltaTime * _speed;
+            }
+
+            if (_player.transform.position.x > transform.position.x)
+            {
+                moveDirection += Vector3.right * Time.deltaTime * _speed;
+            }
+        }
+        else
+        {
+            moveDirection = Vector3.down * Time.deltaTime * _speed;
+        }
+
         transform.Translate(moveDirection);
 
         if (isAlive)
@@ -156,19 +192,32 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    /// <remarks>Don't strictly need this as OnTriggerEnter2D fires as well, but keeps clean separation</remarks>
+    private void OnProximityDetected(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            _player?.TakeDamage(_damage);
-            SetAsDestroyed();
+            _isRamPlayer = true;
         }
+    }
 
-        if (other.CompareTag("Laser"))
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.IsTouching(_boxCollider))
         {
-            if (other.GetComponent<Laser>().IsUpMissile)
+            if (other.CompareTag("Player"))
             {
-                TakeDamage(other);
+                print("Enemy hit player");
+                _player?.TakeDamage(_damage);
+                SetAsDestroyed();
+            }
+
+            if (other.CompareTag("Laser"))
+            {
+                if (other.GetComponent<Laser>().IsUpMissile)
+                {
+                    TakeDamage(other);
+                }
             }
         }
     }
@@ -181,6 +230,7 @@ public class Enemy : MonoBehaviour
             if (_shields.HasShieldDepleted())
             {
                 ActivateShields(false);
+                _hasShields = false;
             }
         }
         else
@@ -206,6 +256,6 @@ public class Enemy : MonoBehaviour
 
     private static float SpawnXPoint()
     {
-        return MaxBoundaryPositiveX / 2f;// Random.Range(MinBoundaryPositiveX, MaxBoundaryPositiveX);
+        return UnityEngine.Random.Range(MinBoundaryPositiveX, MaxBoundaryPositiveX);
     }
 }
