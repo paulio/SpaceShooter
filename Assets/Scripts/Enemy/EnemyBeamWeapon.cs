@@ -30,7 +30,7 @@ public class EnemyBeamWeapon : EnemyWithWaypoints
         }
     }
 
-    protected override void Fire()
+    protected override void Fire(bool isDownwardsMissile)
     {
         // don't fire, we only fire once we're at a waypoint
     }

@@ -26,6 +26,9 @@ public class SpawnManager : MonoBehaviour
     private GameObject _enemyWithBeamPrefab;
 
     [SerializeField]
+    private GameObject _enemyFireBackwardsPrefab;
+
+    [SerializeField]
     private GameObject _asteroidPrefab;
 
 
@@ -41,8 +44,6 @@ public class SpawnManager : MonoBehaviour
     private Wave[] _waves;
 
     private bool _hasStoppedSpawning;
-
-    private bool _isSpawningAsteroids = true;
 
     private const float MinimumPowerupDelay = 3f;
     private const float DefaultMaximumPowerupDelayFloor = 5f;
@@ -111,7 +112,7 @@ public class SpawnManager : MonoBehaviour
                     var powerUp = nextPowerUp.GetComponent<PowerUp>();
                     if (!powerUp.IsAvailableDueToRarity())
                     {
-                        powerUp = null;
+                        nextPowerUp = null;
                         attemptCount--;
                     }
                 }
@@ -158,6 +159,7 @@ public class SpawnManager : MonoBehaviour
             for (int enemyIndex = 0; enemyIndex < enemyDefinition.Count; enemyIndex++)
             {
                 GameObject enemy;
+
                 switch (enemyDefinition.EnemyType)
                 {
                     case EnemyType.WaypointFollower:
@@ -166,9 +168,17 @@ public class SpawnManager : MonoBehaviour
                     case EnemyType.LaserBeam:
                         enemy = CreateWaypointFollowerEnemy(_enemyWithBeamPrefab);
                         break;
+                    case EnemyType.FireBackwards:
+                        enemy = Instantiate(_enemyFireBackwardsPrefab, _enemyContainer.transform);
+                        break;
                     default:
                         enemy = Instantiate(_enemyPrefab, _enemyContainer.transform);
                         break;
+                }
+
+                if (enemy == null)
+                {
+                    Debug.LogError("Enemy failed to be created");
                 }
             }
         }

@@ -4,6 +4,7 @@
     {
         Basic,
         WaypointFollower,
-        LaserBeam
+        LaserBeam,
+        FireBackwards
     }
 }

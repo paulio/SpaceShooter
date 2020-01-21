@@ -32,8 +32,7 @@ public class Enemy : MonoBehaviour
     private BoxCollider2D _boxCollider;
     private AudioManager _audioManager;
     private bool _hasShields;
-
-
+    private SpriteRenderer _spriteRender;
     private float _nextFire;
     private Shields _shields;
     private bool _isAggressive;
@@ -45,6 +44,10 @@ public class Enemy : MonoBehaviour
 
 
     protected GameObject LaserPrefab => _laserPrefab;
+
+    protected Player Player => _player;
+
+    protected SpriteRenderer SpriteRenderer => _spriteRender;
 
     // Start is called before the first frame update
     void Start()
@@ -62,6 +65,8 @@ public class Enemy : MonoBehaviour
 
         this._audioManager = GameObject.Find("Audio_Manager").GetComponent<AudioManager>();
         LogHelper.CheckForNull(_audioManager, nameof(_audioManager));
+
+        this._spriteRender = GetComponent<SpriteRenderer>();
 
         _nextFire = Time.time + UnityEngine.Random.Range(0.5f, 3f);
 
@@ -99,7 +104,7 @@ public class Enemy : MonoBehaviour
                 _nextFire += UnityEngine.Random.Range(2f, 8f);
                 if (_laserPrefab != null)
                 {
-                    Fire();
+                    Fire(isDirectionDown: true);
                 }
             }
         }
@@ -174,7 +179,8 @@ public class Enemy : MonoBehaviour
 
     private void ActivateShields(bool isActive)
     {
-        _shieldsChildComponent?.SetActive(isActive);
+        if (_shieldsChildComponent)
+            _shieldsChildComponent.SetActive(isActive);
     }
 
     private void SetStartPosition()
@@ -182,13 +188,13 @@ public class Enemy : MonoBehaviour
         transform.position = new Vector3(SpawnXPoint(), MaxBoundaryPositiveY, 0);
     }
 
-    protected virtual void Fire()
+    protected virtual void Fire(bool isDirectionDown)
     {
         var laserObject = Instantiate(_laserPrefab, transform.position + Vector3.up, Quaternion.identity);
         var lasers = laserObject.GetComponentsInChildren<Laser>();
         for (int laserIndex = 0; laserIndex < lasers.Length; laserIndex++)
         {
-            lasers[laserIndex].SetDownMissile();
+            lasers[laserIndex].SetEnemyMissile(isDirectionDown);
         }
     }
 
@@ -208,13 +214,13 @@ public class Enemy : MonoBehaviour
             if (other.CompareTag("Player"))
             {
                 print("Enemy hit player");
-                _player?.TakeDamage(_damage);
+                _player.TakeDamage(_damage);
                 SetAsDestroyed();
             }
 
             if (other.CompareTag("Laser"))
             {
-                if (other.GetComponent<Laser>().IsUpMissile)
+                if (other.GetComponent<Laser>().IsEnemyMissile)
                 {
                     TakeDamage(other);
                 }
@@ -238,15 +244,15 @@ public class Enemy : MonoBehaviour
             Destroy(other.gameObject);
             SetAsDestroyed();
 
-            _player?.IncreaseScore(10);
+            _player.IncreaseScore(10);
         }
     }
 
     private void SetAsDestroyed()
     {
         _boxCollider.enabled = false;
-        _animator?.SetTrigger(_isDestroyedHash);
-        _audioManager?.PlayExplosion(transform.position);
+        _animator.SetTrigger(_isDestroyedHash);
+        _audioManager.PlayExplosion(transform.position);
         const float DestroyedMomentumeSpeedReduction = 0.9f;
         const float DestroyedTimeOnScreen = 2f;
         
