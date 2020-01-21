@@ -29,7 +29,7 @@ public class LaserBeam : MonoBehaviour
         if (!_hasStarted)
         {
             _hasStarted = true;
-            _audioManager?.PlayLaserBeam(transform.position);
+            if (_audioManager) _audioManager.PlayLaserBeam(transform.position);
             StartCoroutine(AutoDestruct());
         }
 
@@ -43,7 +43,7 @@ public class LaserBeam : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            _player?.TakeDamage(10);
+            if (_player) _player.TakeDamage(10);
         }
     }
 

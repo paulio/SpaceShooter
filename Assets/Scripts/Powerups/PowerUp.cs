@@ -11,7 +11,8 @@ public enum PowerUpType
     Ammo = 3,
     Health = 4,
     MultiShot = 5,
-    Slow
+    Slow = 6,
+    HomingShot = 7
 }
 
 public class PowerUp : MonoBehaviour
@@ -87,6 +88,9 @@ public class PowerUp : MonoBehaviour
                     break;
                 case PowerUpType.MultiShot:
                     player.CollectMultiShot();
+                    break;
+                case PowerUpType.HomingShot:
+                    player.CollectHomingShot();
                     break;
                 case PowerUpType.Speed:
                     player.CollectSpeedUp();

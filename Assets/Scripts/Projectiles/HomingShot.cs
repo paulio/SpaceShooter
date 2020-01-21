@@ -14,8 +14,10 @@ public class HomingShot : MonoBehaviour, IProjectile
     [SerializeField]
     private float _turningSpeedMultiplier = 0.5f;
 
+    [SerializeField]
+    private float _radarRadius = 14f;
+
     private CircleCollider2D _radarCollider;
-    private BoxCollider2D _collider;
     private Transform _target;
     private bool _hasAquiredTarget;
 
@@ -27,7 +29,6 @@ public class HomingShot : MonoBehaviour, IProjectile
     void Start()
     {
         this._radarCollider = GetComponent<CircleCollider2D>();
-        ////this._collider = GetComponent<BoxCollider2D>();
         StartCoroutine(SelfDestruct());
     }
 
@@ -39,7 +40,7 @@ public class HomingShot : MonoBehaviour, IProjectile
             if (_hasAquiredTarget)
             {
                 _hasAquiredTarget = false;
-                _radarCollider.radius = 14f;
+                _radarCollider.radius = _radarRadius;
             }
 
             transform.Translate(Vector3.up * Time.deltaTime * _speed);
@@ -74,9 +75,9 @@ public class HomingShot : MonoBehaviour, IProjectile
             {
                 if (collision.CompareTag("Enemy"))
                 {
-                    print("target aquired");
                     _target = collision.transform;
-                    _radarCollider.radius = 1f;
+                    const float colliderRadius = 1f;
+                    _radarCollider.radius = colliderRadius;
                     _hasAquiredTarget = true;
                 }
             }
