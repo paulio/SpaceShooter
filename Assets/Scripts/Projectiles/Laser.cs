@@ -23,7 +23,7 @@ public class Laser : MonoBehaviour
 
     public void SetEnemyMissile(bool isDirectionDown)
     {
-        _isEnemyMissile = false;
+        _isEnemyMissile = true;
         if (isDirectionDown)
         {
             _direction = Vector3.down;
@@ -36,8 +36,9 @@ public class Laser : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!_isEnemyMissile && collision.CompareTag("Player"))
+        if (_isEnemyMissile && collision.CompareTag("Player"))
         {
+            print("Laser: Enemy missile Hit player");
             _player.TakeDamage(10);
             Destroy(this.gameObject);
         }

@@ -37,6 +37,7 @@ public class Enemy : MonoBehaviour
     private Shields _shields;
     private bool _isAggressive;
     private bool _isRamPlayer;
+    private bool _hasFiredAtPowerUp;
     private const float MaxBoundaryPositiveX = 9f;
     private const float MinBoundaryPositiveX = -9f;
     private const float MaxBoundaryPositiveY = 8f;
@@ -83,12 +84,10 @@ public class Enemy : MonoBehaviour
 
         if (_proximityChildComponent != null)
         {
+            _proximityChildComponent.Initialize(OnProximityDetected);
+            _proximityChildComponent.enabled = true;
+
             _isAggressive = UnityEngine.Random.Range(0f, 100f) > 100f - _percentageChanceOfAggressive;
-            if (_isAggressive)
-            {
-                _proximityChildComponent.Initialize(OnProximityDetected);
-                _proximityChildComponent.enabled = true;
-            }
         }
     }
 
@@ -101,7 +100,6 @@ public class Enemy : MonoBehaviour
         {
             if (_boxCollider.enabled)
             {
-                _nextFire += UnityEngine.Random.Range(2f, 8f);
                 if (_laserPrefab != null)
                 {
                     Fire(isDirectionDown: true);
@@ -196,14 +194,22 @@ public class Enemy : MonoBehaviour
         {
             lasers[laserIndex].SetEnemyMissile(isDirectionDown);
         }
+
+        _nextFire += UnityEngine.Random.Range(2f, 8f);
     }
 
     /// <remarks>Don't strictly need this as OnTriggerEnter2D fires as well, but keeps clean separation</remarks>
     private void OnProximityDetected(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (_isAggressive && other.CompareTag("Player"))
         {
             _isRamPlayer = true;
+        }
+
+        if (!_hasFiredAtPowerUp && other.CompareTag("PowerUp"))
+        {
+            _hasFiredAtPowerUp = true;
+            Fire(isDirectionDown: true);
         }
     }
 
@@ -213,14 +219,13 @@ public class Enemy : MonoBehaviour
         {
             if (other.CompareTag("Player"))
             {
-                print("Enemy hit player");
                 _player.TakeDamage(_damage);
                 SetAsDestroyed();
             }
 
             if (other.CompareTag("Laser"))
             {
-                if (other.GetComponent<Laser>().IsEnemyMissile)
+                if (!other.GetComponent<Laser>().IsEnemyMissile)
                 {
                     TakeDamage(other);
                 }

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7043087970003459023}
   m_Layer: 0
   m_Name: AmmoBox_Powerup
-  m_TagString: Untagged
+  m_TagString: PowerUp
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d7c7fc6c0c3b64880e8c3d2d344203, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 2
+  _speed: 1
   _rarityPercentage: 80
   _powerUpType: 3
 --- !u!61 &7633434279205316402

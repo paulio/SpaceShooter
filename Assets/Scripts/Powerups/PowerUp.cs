@@ -56,45 +56,59 @@ public class PowerUp : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            print($"Power-up collected {_powerUpType}");
-            var player = collision.GetComponent<Player>();
-            if (player != null)
-            {
-                switch(_powerUpType)
-                {
-                    case PowerUpType.TrippleShot:
-                        player.CollectTrippleShot();
-                        break;
-                    case PowerUpType.MultiShot:
-                        player.CollectMultiShot();
-                        break;
-                    case PowerUpType.Speed:
-                        player.CollectSpeedUp();
-                        break;
-                    case PowerUpType.Slow:
-                        player.CollectSlowDown();
-                        break;
-                    case PowerUpType.Shield:
-                        player.CollectShields();
-                        break;
-                    case PowerUpType.Ammo:
-                        player.CollectAmmo();
-                        break;
-                    case PowerUpType.Health:
-                        player.CollectHealth();
-                        break;
-                    default:
-                        print("Unknown powerup");
-                        break;
-                }
-            }
-            else
-            {
-                Debug.LogError("Player component not found");
-            }
-
-            Destroy(this.gameObject);
+            CollectPlayerPowerUp(collision);
         }
+        else if (collision.CompareTag("Laser"))
+        {
+            var laser = collision.GetComponent<Laser>();
+            if (laser.IsEnemyMissile)
+            {
+                print("Power up hit by enemy missile");
+                Destroy(this.gameObject);
+                Destroy(laser.gameObject);
+            }
+        }
+    }
+
+    private void CollectPlayerPowerUp(Collider2D collision)
+    {
+        var player = collision.GetComponent<Player>();
+        if (player != null)
+        {
+            switch (_powerUpType)
+            {
+                case PowerUpType.TrippleShot:
+                    player.CollectTrippleShot();
+                    break;
+                case PowerUpType.MultiShot:
+                    player.CollectMultiShot();
+                    break;
+                case PowerUpType.Speed:
+                    player.CollectSpeedUp();
+                    break;
+                case PowerUpType.Slow:
+                    player.CollectSlowDown();
+                    break;
+                case PowerUpType.Shield:
+                    player.CollectShields();
+                    break;
+                case PowerUpType.Ammo:
+                    player.CollectAmmo();
+                    break;
+                case PowerUpType.Health:
+                    player.CollectHealth();
+                    break;
+                default:
+                    print("Unknown powerup");
+                    break;
+            }
+        }
+        else
+        {
+            Debug.LogError("Player component not found");
+        }
+
+        Destroy(this.gameObject);
     }
 
     private static float SpawnXPoint()
