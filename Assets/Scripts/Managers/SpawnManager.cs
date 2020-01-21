@@ -68,6 +68,10 @@ public class SpawnManager : MonoBehaviour
 
     public void StartSpawning()
     {
+        // if you want to test a single type of enemy uncomment the following;
+        ////CreateTypeOfEnemy(EnemyType.Basic);
+        ////return;
+
         SetNextWave();
         StartCoroutine(nameof(SpawnRoutine));
         StartCoroutine(SpawnPowerupRoutine());
@@ -158,29 +162,34 @@ public class SpawnManager : MonoBehaviour
             var enemyDefinition = _currentSubWave.Enemies[enemyTypeIndex];
             for (int enemyIndex = 0; enemyIndex < enemyDefinition.Count; enemyIndex++)
             {
-                GameObject enemy;
-
-                switch (enemyDefinition.EnemyType)
-                {
-                    case EnemyType.WaypointFollower:
-                        enemy = CreateWaypointFollowerEnemy(_enemyWithWaypointsPrefab);
-                        break;
-                    case EnemyType.LaserBeam:
-                        enemy = CreateWaypointFollowerEnemy(_enemyWithBeamPrefab);
-                        break;
-                    case EnemyType.FireBackwards:
-                        enemy = Instantiate(_enemyFireBackwardsPrefab, _enemyContainer.transform);
-                        break;
-                    default:
-                        enemy = Instantiate(_enemyPrefab, _enemyContainer.transform);
-                        break;
-                }
-
-                if (enemy == null)
-                {
-                    Debug.LogError("Enemy failed to be created");
-                }
+                CreateTypeOfEnemy(enemyDefinition.EnemyType);
             }
+        }
+    }
+
+    private void CreateTypeOfEnemy(EnemyType enemyType)
+    {
+        GameObject enemy;
+
+        switch (enemyType)
+        {
+            case EnemyType.WaypointFollower:
+                enemy = CreateWaypointFollowerEnemy(_enemyWithWaypointsPrefab);
+                break;
+            case EnemyType.LaserBeam:
+                enemy = CreateWaypointFollowerEnemy(_enemyWithBeamPrefab);
+                break;
+            case EnemyType.FireBackwards:
+                enemy = Instantiate(_enemyFireBackwardsPrefab, _enemyContainer.transform);
+                break;
+            default:
+                enemy = Instantiate(_enemyPrefab, _enemyContainer.transform);
+                break;
+        }
+
+        if (enemy == null)
+        {
+            Debug.LogError("Enemy failed to be created");
         }
     }
 

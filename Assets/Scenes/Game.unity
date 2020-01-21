@@ -5082,7 +5082,8 @@ MonoBehaviour:
     type: 3}
   _enemyWithBeamPrefab: {fileID: 4751110170778365135, guid: 4b6ea675987cf994dbf25a625e10ee88,
     type: 3}
-  _enemyFireBackwardsPrefab: {fileID: 0}
+  _enemyFireBackwardsPrefab: {fileID: 1536977373611609102, guid: 7490ddd7b1d4f324cb0371a2e2262b2c,
+    type: 3}
   _asteroidPrefab: {fileID: 7537220894493316705, guid: dcc52b92f5cb97f4e84918e0ee1bb90d,
     type: 3}
   _enemyContainer: {fileID: 2040180219}
