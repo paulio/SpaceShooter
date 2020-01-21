@@ -271,7 +271,7 @@ MonoBehaviour:
   - {fileID: 33693503}
   _powerUps:
   - {fileID: 28013330035932924, guid: 3ec2d85ead63d0f44bd5c600fe6b4a23, type: 3}
-  - {fileID: 1690723668475152423, guid: 337a892d0e271024faca34fc564aff90, type: 3}
+  - {fileID: 9093495969693912608, guid: c048f98e46654154fb5fc096362073f9, type: 3}
   - {fileID: -7416337905601248635, guid: 0ce903ec7fc2358458267fe07a6e01c6, type: 3}
   - {fileID: 4176379948887398838, guid: 06b89dfc8877eee4d8f097e2256316dc, type: 3}
   - {fileID: 4803592851449988674, guid: 499296a8e8849ae4e827bf9282aca7dd, type: 3}
@@ -722,7 +722,7 @@ MonoBehaviour:
   - {fileID: 1216825464}
   _powerUps:
   - {fileID: 28013330035932924, guid: 3ec2d85ead63d0f44bd5c600fe6b4a23, type: 3}
-  - {fileID: 1690723668475152423, guid: 337a892d0e271024faca34fc564aff90, type: 3}
+  - {fileID: 9093495969693912608, guid: c048f98e46654154fb5fc096362073f9, type: 3}
   - {fileID: -7416337905601248635, guid: 0ce903ec7fc2358458267fe07a6e01c6, type: 3}
   - {fileID: 4176379948887398838, guid: 06b89dfc8877eee4d8f097e2256316dc, type: 3}
   _delayUntilNextWave: 5
@@ -3863,6 +3863,7 @@ MonoBehaviour:
   - {fileID: 1690723668475152423, guid: 337a892d0e271024faca34fc564aff90, type: 3}
   - {fileID: -7416337905601248635, guid: 0ce903ec7fc2358458267fe07a6e01c6, type: 3}
   - {fileID: 4176379948887398838, guid: 06b89dfc8877eee4d8f097e2256316dc, type: 3}
+  - {fileID: 9093495969693912608, guid: c048f98e46654154fb5fc096362073f9, type: 3}
   _delayUntilNextWave: 5
 --- !u!1 &1540808917
 GameObject:
@@ -3915,7 +3916,7 @@ MonoBehaviour:
   - {fileID: 1690723668475152423, guid: 337a892d0e271024faca34fc564aff90, type: 3}
   - {fileID: -7416337905601248635, guid: 0ce903ec7fc2358458267fe07a6e01c6, type: 3}
   - {fileID: 4176379948887398838, guid: 06b89dfc8877eee4d8f097e2256316dc, type: 3}
-  - {fileID: 4803592851449988674, guid: 499296a8e8849ae4e827bf9282aca7dd, type: 3}
+  - {fileID: 9093495969693912608, guid: c048f98e46654154fb5fc096362073f9, type: 3}
   _delayUntilNextWave: 5
 --- !u!1 &1614300661
 GameObject:
@@ -5084,13 +5085,6 @@ MonoBehaviour:
   _asteroidPrefab: {fileID: 7537220894493316705, guid: dcc52b92f5cb97f4e84918e0ee1bb90d,
     type: 3}
   _enemyContainer: {fileID: 2040180219}
-  _powerups:
-  - {fileID: 1956390150682790802, guid: 06b89dfc8877eee4d8f097e2256316dc, type: 3}
-  - {fileID: 7778622031786386855, guid: 0ce903ec7fc2358458267fe07a6e01c6, type: 3}
-  - {fileID: 8922137304551538848, guid: 337a892d0e271024faca34fc564aff90, type: 3}
-  - {fileID: 1565957384111047750, guid: 3ec2d85ead63d0f44bd5c600fe6b4a23, type: 3}
-  - {fileID: 6597819426749642914, guid: 499296a8e8849ae4e827bf9282aca7dd, type: 3}
-  - {fileID: 2617134808163546662, guid: e43df241e6303c040a1845a0f2955a3c, type: 3}
   _waypointGroups:
   - {fileID: 13068542}
   - {fileID: 2137795120}

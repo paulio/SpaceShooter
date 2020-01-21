@@ -32,8 +32,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private GameObject _enemyContainer;
 
-    [SerializeField]
-    private GameObject[] _powerups;
+    private PowerUp[] _powerups;
 
     [SerializeField]
     private Waypoints[] _waypointGroups;
@@ -104,8 +103,7 @@ public class SpawnManager : MonoBehaviour
             yield return new WaitForSeconds(UnityEngine.Random.Range(MinimumPowerupDelay, Mathf.Max(_delayPowerup, DefaultMaximumPowerupDelayFloor)));
             if (!_hasStoppedSpawning)
             {
-                
-                GameObject nextPowerUp = null;
+                PowerUp nextPowerUp = null;
                 int attemptCount = 4;
                 while(nextPowerUp == null && attemptCount > 0)
                 {
@@ -140,11 +138,16 @@ public class SpawnManager : MonoBehaviour
             }
 
             _currentSubWave = _currentWave.Waves[_currentSubWaveIndex];
-
+            SetPowerUpsForSubWave();
             CreateEnemiesForSubWave();
 
             yield return new WaitForSeconds(_currentSubWave.DelayUntilNextWave);
         }
+    }
+
+    private void SetPowerUpsForSubWave()
+    {
+        _powerups = _currentSubWave.PowerUps;
     }
 
     private void CreateEnemiesForSubWave()

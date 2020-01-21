@@ -15,6 +15,8 @@ namespace Assets.Scripts.Managers.Waves
 
         public EnemyDefinition[] Enemies => _enemies;
 
+        public PowerUp[] PowerUps => _powerUps;
+
         public float DelayUntilNextWave => _delayUntilNextWave;
     }
 }
