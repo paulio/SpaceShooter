@@ -21,12 +21,17 @@ public class PowerUp : MonoBehaviour
     private float _speed = 3f;
 
     [SerializeField]
+    private float _turningMultiplier = 0.7f;
+
+    [SerializeField]
     private float _rarityPercentage = 80f;
 
 
     [SerializeField]
     private PowerUpType _powerUpType = PowerUpType.None;
 
+    private GameObject _player;
+    
     private const float MaxBoundaryPositiveX = 9f;
     private const float MinBoundaryPositiveX = -9f;
     private const float MinBoundaryPositiveY = -2.0f;
@@ -42,12 +47,28 @@ public class PowerUp : MonoBehaviour
     void Start()
     {
         this.transform.position = new Vector3(SpawnXPoint(), MaxBoundaryPositiveY, 0);
+        this._player = GameObject.Find("Player");
+        LogHelper.CheckForNull(this._player, nameof(this._player));
     }
 
     // Update is called once per frame
     void Update()
     {
         this.transform.Translate(Vector3.down * Time.deltaTime * _speed);
+        var isPlayerAttractingPowerUps = Input.GetKey(KeyCode.C);
+        if (isPlayerAttractingPowerUps && _player)
+        {
+            var playerXPos = _player.transform.position.x;
+            if (playerXPos < this.transform.position.x)
+            {
+                this.transform.Translate(Vector3.left * Time.deltaTime * _speed * _turningMultiplier);
+            }
+            else if (playerXPos > this.transform.position.x)
+            {
+                this.transform.Translate(Vector3.right * Time.deltaTime * _speed * _turningMultiplier);
+            }
+        }
+
         if (this.transform.position.y <= MinBoundaryPositiveY)
         {
             Destroy(this.gameObject);
