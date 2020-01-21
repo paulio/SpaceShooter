@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Enemy;
+﻿using System;
+using Assets.Scripts.Enemy;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -12,12 +13,22 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private GameObject _laserPrefab;
 
+    [SerializeField]
+    private GameObject _shieldsChildComponent;
+
+    [SerializeField]
+    private float _percentageChanceOfShields = 20f;
+
     private Player _player;
     private int _isDestroyedHash;
     private Animator _animator;
     private BoxCollider2D _boxCollider;
     private AudioManager _audioManager;
+    private bool _hasShields;
+
+
     private float _nextFire;
+    private Shields _shields;
     private const float MaxBoundaryPositiveX = 9f;
     private const float MinBoundaryPositiveX = -9f;
     private const float MaxBoundaryPositiveY = 8f;
@@ -43,8 +54,19 @@ public class Enemy : MonoBehaviour
         this._audioManager = GameObject.Find("Audio_Manager").GetComponent<AudioManager>();
         LogHelper.CheckForNull(_audioManager, nameof(_audioManager));
 
-        _nextFire = Time.time + Random.Range(0.5f, 3f);
-        print("Enemy started");
+        _nextFire = Time.time + UnityEngine.Random.Range(0.5f, 3f);
+
+        if (_shieldsChildComponent != null)
+        {
+            _hasShields = UnityEngine.Random.Range(0f, 100f) > 100f-_percentageChanceOfShields;
+
+            if (_hasShields)
+            {
+                _shields = _shieldsChildComponent.GetComponent<Shields>();
+                _shields.Initialize(2);
+                ActivateShields(true);
+            }
+        }
     }
 
     // Update is called once per frame
@@ -56,7 +78,7 @@ public class Enemy : MonoBehaviour
         {
             if (_boxCollider.enabled)
             {
-                _nextFire += Random.Range(2f, 8f);
+                _nextFire += UnityEngine.Random.Range(2f, 8f);
                 if (_laserPrefab != null)
                 {
                     Fire();
@@ -113,6 +135,12 @@ public class Enemy : MonoBehaviour
         return hasClamped;
     }
 
+
+    private void ActivateShields(bool isActive)
+    {
+        _shieldsChildComponent?.SetActive(isActive);
+    }
+
     private void SetStartPosition()
     {
         transform.position = new Vector3(SpawnXPoint(), MaxBoundaryPositiveY, 0);
@@ -140,11 +168,27 @@ public class Enemy : MonoBehaviour
         {
             if (other.GetComponent<Laser>().IsUpMissile)
             {
-                Destroy(other.gameObject);
-                SetAsDestroyed();
-
-                _player?.IncreaseScore(10);
+                TakeDamage(other);
             }
+        }
+    }
+
+    private void TakeDamage(Collider2D other)
+    {
+        if (_hasShields)
+        {
+            _shields.TakeDamage();
+            if (_shields.HasShieldDepleted())
+            {
+                ActivateShields(false);
+            }
+        }
+        else
+        {
+            Destroy(other.gameObject);
+            SetAsDestroyed();
+
+            _player?.IncreaseScore(10);
         }
     }
 

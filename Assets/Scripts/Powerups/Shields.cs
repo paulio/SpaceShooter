@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Shields : MonoBehaviour
 {
@@ -42,5 +43,10 @@ public class Shields : MonoBehaviour
     {
         print($"Shield {_shieldHits} of {_maxLives}");
         return _maxLives <= _shieldHits;
+    }
+
+    public void Initialize(int initialDamage)
+    {
+        _shieldHits = initialDamage;
     }
 }
