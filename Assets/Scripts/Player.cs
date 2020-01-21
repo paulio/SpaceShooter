@@ -23,6 +23,9 @@ public class Player : MonoBehaviour
     private GameObject _laserMultiShotPrefab;
 
     [SerializeField]
+    private GameObject _homingMissilePrefab;
+
+    [SerializeField]
     private GameObject _shieldsChildComponent;
 
     [SerializeField]
@@ -75,9 +78,10 @@ public class Player : MonoBehaviour
     private const float MinBoundaryPositiveY = -2.0f;
 
 
-    private bool _isTrippleShotActive = false;
-    private bool _isSpeedUpActive = false;
+    private bool _isTrippleShotActive;
+    private bool _isSpeedUpActive;
     private bool _isShieldsUpActive;
+    private bool _isHomingMissilesActive;
     private bool _isLeftEngineOnFire;
     private bool _isRightEngineOnFire;
 
@@ -108,6 +112,7 @@ public class Player : MonoBehaviour
         this._uiManager?.UpdateScore(_score);
         this._uiManager?.UpdateLives(_lives);
         this._uiManager?.UpdateAmmo(_ammo, _maxAmmo);
+        _isHomingMissilesActive = true;
     }
 
     // Update is called once per frame
@@ -286,11 +291,15 @@ public class Player : MonoBehaviour
         {
             if (_ammo > 0)
             {
-                if (_laserPrefab != null && _laserTrippleShotPrefab != null && _laserMultiShotPrefab != null)
+                if (_laserPrefab != null && _laserTrippleShotPrefab != null && _laserMultiShotPrefab != null && _homingMissilePrefab != null)
                 {
                     if (_isMultiShotActive)
                     {
                         Instantiate(_laserMultiShotPrefab, transform.position + Vector3.up * _laserStartingOffset, Quaternion.identity);
+                    }
+                    else if (_isHomingMissilesActive)
+                    {
+                        Instantiate(_homingMissilePrefab, transform.position + Vector3.up * _laserStartingOffset, Quaternion.identity);
                     }
                     else
                     {

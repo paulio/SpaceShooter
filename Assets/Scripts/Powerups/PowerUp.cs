@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Projectiles;
+using UnityEngine;
 
 
 public enum PowerUpType
@@ -60,12 +61,16 @@ public class PowerUp : MonoBehaviour
         }
         else if (collision.CompareTag("Laser"))
         {
-            var laser = collision.GetComponent<Laser>();
-            if (laser.IsEnemyMissile)
+            var laser = collision.GetComponent<IProjectile>();
+            if (laser == null)
+            {
+                Debug.LogError($"Collided with a non projectile laser {collision.name}");
+            }
+            else if (laser.IsEnemyMissile)
             {
                 print("Power up hit by enemy missile");
                 Destroy(this.gameObject);
-                Destroy(laser.gameObject);
+                Destroy(collision.gameObject);
             }
         }
     }

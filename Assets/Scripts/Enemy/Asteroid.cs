@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Asteroid : MonoBehaviour
+public class Asteroid : MonoBehaviour, ITakeDamage
 {
     [SerializeField]
     private float _speed = 4f;
@@ -60,23 +60,29 @@ public class Asteroid : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (other.IsTouching(_circleCollider))
         {
-            if (_player != null)
+            if (other.CompareTag("Player"))
             {
-                _player.TakeDamage(_damage);
+                if (_player != null)
+                {
+                    _player.TakeDamage(_damage);
+                }
+                SetAsDestroyed();
             }
-            SetAsDestroyed();
-        }
-
-        if (other.CompareTag("Laser"))
-        {
-            Destroy(other.gameObject);
-            SetAsDestroyed();
-
-            if (_player != null)
+            else if (other.CompareTag("Laser"))
             {
-                _player.IncreaseScore(10);
+                var homingShot = other.GetComponent<HomingShot>();
+                if (homingShot != null)
+                {
+                    // ignore collision here, let the homing shot deal.
+                    print("ignore collision here, let the homing shot deal.");
+                }
+                else
+                {
+                    print("Asteroid hit");
+                    TakeDamage(other.gameObject);
+                }
             }
         }
     }
@@ -95,5 +101,16 @@ public class Asteroid : MonoBehaviour
     private static float SpawnXPoint()
     {
         return Random.Range(MinBoundaryPositiveX, MaxBoundaryPositiveX);
+    }
+
+    public void TakeDamage(GameObject other)
+    {
+        Destroy(other.gameObject);
+        SetAsDestroyed();
+
+        if (_player != null)
+        {
+            _player.IncreaseScore(10);
+        }
     }
 }

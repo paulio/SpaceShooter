@@ -3105,6 +3105,8 @@ MonoBehaviour:
     type: 3}
   _laserMultiShotPrefab: {fileID: 2117649879567533634, guid: b82c093d98c23f44ca5326e0caca87dd,
     type: 3}
+  _homingMissilePrefab: {fileID: 1561656577943364078, guid: 891b406aab0f2854b85500604a53be0e,
+    type: 3}
   _shieldsChildComponent: {fileID: 1155681176}
   _leftEngine: {fileID: 1655022314}
   _rightEngine: {fileID: 460048316}

@@ -1,8 +1,9 @@
 ﻿using System;
 using Assets.Scripts.Enemy;
+using Assets.Scripts.Projectiles;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, ITakeDamage
 {
     [SerializeField]
     protected float _speed = 4f;
@@ -240,7 +241,7 @@ public class Enemy : MonoBehaviour
         }
         else if (_canDodgeShots && !_isTakingEvasiveAction && other.CompareTag("Laser"))
         {
-            if (!other.GetComponent<Laser>().IsEnemyMissile)
+            if (!other.GetComponent<IProjectile>().IsEnemyMissile)
             {
                 _isTakingEvasiveAction = true;
                 _evadePosition = other.transform.position;
@@ -261,15 +262,21 @@ public class Enemy : MonoBehaviour
 
             if (other.CompareTag("Laser"))
             {
-                if (!other.GetComponent<Laser>().IsEnemyMissile)
+                var homingShot = other.GetComponent<HomingShot>();
+                if (homingShot != null)
                 {
-                    TakeDamage(other);
+                    // ignore collision here, let the homing shot deal.
+                    print("ignore collision here, let the homing shot deal.");
+                }
+                else if (!other.GetComponent<IProjectile>().IsEnemyMissile)
+                {
+                    TakeDamage(other.gameObject);
                 }
             }
         }
     }
 
-    private void TakeDamage(Collider2D other)
+    public void TakeDamage(GameObject other)
     {
         if (_hasShields)
         {

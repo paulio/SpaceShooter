@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Projectiles;
+using UnityEngine;
 
-public class Laser : MonoBehaviour
+public class Laser : MonoBehaviour, IProjectile
 {
     [SerializeField]
     private float _speed = 8f;
