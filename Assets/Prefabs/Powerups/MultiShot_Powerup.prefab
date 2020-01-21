@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8632497157071970218}
   - component: {fileID: 397949268065084053}
   - component: {fileID: 2930533212057053086}
+  - component: {fileID: 6010354621258652845}
   m_Layer: 0
   m_Name: MultiShot_Powerup
   m_TagString: PowerUp
@@ -80,7 +81,7 @@ SpriteRenderer:
   m_Size: {x: 5.12, y: 5.12}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!61 &8632497157071970218
@@ -145,3 +146,22 @@ MonoBehaviour:
   _speed: 3
   _rarityPercentage: 80
   _powerUpType: 5
+--- !u!95 &6010354621258652845
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2617134808163546662}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 70da6736518fa3646bad86c1c5329a77, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
