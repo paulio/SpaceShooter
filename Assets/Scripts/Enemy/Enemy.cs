@@ -8,6 +8,9 @@ public class Enemy : MonoBehaviour
     protected float _speed = 4f;
 
     [SerializeField]
+    private float _evasionSpeedMultiplier = 0.5f;
+
+    [SerializeField]
     private float _damage = 1f;
 
     [SerializeField]
@@ -26,6 +29,9 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private float _percentageChanceOfAggressive = 20f;
 
+    [SerializeField]
+    private float _percentageChanceOfDodgingShots = 40f;
+
     private Player _player;
     private int _isDestroyedHash;
     private Animator _animator;
@@ -38,6 +44,9 @@ public class Enemy : MonoBehaviour
     private bool _isAggressive;
     private bool _isRamPlayer;
     private bool _hasFiredAtPowerUp;
+    private bool _isTakingEvasiveAction;
+    private Vector3 _evadePosition;
+    private bool _canDodgeShots;
     private const float MaxBoundaryPositiveX = 9f;
     private const float MinBoundaryPositiveX = -9f;
     private const float MaxBoundaryPositiveY = 8f;
@@ -89,6 +98,8 @@ public class Enemy : MonoBehaviour
 
             _isAggressive = UnityEngine.Random.Range(0f, 100f) > 100f - _percentageChanceOfAggressive;
         }
+
+        _canDodgeShots = UnityEngine.Random.Range(0f, 100f) > 100f - _percentageChanceOfDodgingShots; 
     }
 
     // Update is called once per frame
@@ -122,6 +133,23 @@ public class Enemy : MonoBehaviour
             if (_player.transform.position.x > transform.position.x)
             {
                 moveDirection += Vector3.right * Time.deltaTime * _speed;
+            }
+        }
+        else if (_isTakingEvasiveAction)
+        {
+            moveDirection = Vector3.down * Time.deltaTime * _speed;
+            var sizeOfEnemy = _boxCollider.size.x;
+            if (_evadePosition.x < transform.position.x  && _evadePosition.x > transform.position.x - sizeOfEnemy)
+            {
+                moveDirection += Vector3.right * Time.deltaTime * _speed * _evasionSpeedMultiplier;
+            }
+            else if (_evadePosition.x >= transform.position.x && _evadePosition.x < transform.position.x + sizeOfEnemy)
+            {
+                moveDirection += Vector3.left * Time.deltaTime * _speed * _evasionSpeedMultiplier;
+            }
+            else
+            {
+                _isTakingEvasiveAction = false;
             }
         }
         else
@@ -205,12 +233,20 @@ public class Enemy : MonoBehaviour
         {
             _isRamPlayer = true;
         }
-
-        if (!_hasFiredAtPowerUp && other.CompareTag("PowerUp"))
+        else if (!_hasFiredAtPowerUp && other.CompareTag("PowerUp"))
         {
             _hasFiredAtPowerUp = true;
             Fire(isDirectionDown: true);
         }
+        else if (_canDodgeShots && !_isTakingEvasiveAction && other.CompareTag("Laser"))
+        {
+            if (!other.GetComponent<Laser>().IsEnemyMissile)
+            {
+                _isTakingEvasiveAction = true;
+                _evadePosition = other.transform.position;
+            }
+        }
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)
