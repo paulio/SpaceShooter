@@ -24,7 +24,6 @@ public class ProximityDetector : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        print($"Proximity {collision.name} {collision.tag}");
         _onCollision?.Invoke(collision);
     }
 

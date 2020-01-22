@@ -296,7 +296,7 @@ public class Enemy : MonoBehaviour, ITakeDamage
         }
     }
 
-    private void SetAsDestroyed()
+    protected virtual void SetAsDestroyed()
     {
         _boxCollider.enabled = false;
         _animator.SetTrigger(_isDestroyedHash);

@@ -14,7 +14,6 @@ public class EnemyBeamWeapon : EnemyWithWaypoints
     {
         _fireWaypoint = UnityEngine.Random.Range(0, Waypoints.GetWaypoints.Length-1);
         _laserBeam =  LaserPrefab.GetComponent<LaserBeam>();
-        print($"EnemyBeamWeapon started, fireWaypoint {_fireWaypoint}");
     }
 
     protected override void Move(bool isAlive)
@@ -37,18 +36,14 @@ public class EnemyBeamWeapon : EnemyWithWaypoints
 
     protected override void SetNextWaypoint()
     {
-        print("EnemyBeamWeapon SetNextWaypoint");
         if (_fireWaypoint == -1)
         {
             StartBeam();
         }
 
-        print($"EnemyBeamWeapon CurrentWaypoint {CurrentWaypoint} = _fireWaypoint {_fireWaypoint}");
         if (CurrentWaypoint == _fireWaypoint)
         {
-            print("at Firing waypoint, pause and beam laser");
             var laserObject = Instantiate(LaserPrefab, transform.position + (Vector3.up * -1f), Quaternion.identity);
-            print(laserObject.name);
             StartCoroutine(FireBeamRoutine());
         }
         else
@@ -57,9 +52,14 @@ public class EnemyBeamWeapon : EnemyWithWaypoints
         }
     }
 
+    protected override void SetAsDestroyed()
+    {
+        base.SetAsDestroyed();
+        _laserBeam.SetAsDestroyed();
+    }
+
     private IEnumerator FireBeamRoutine()
     {
-        print("EnemyBeamWeapon FireBeam");
         _isFiring = true;
         yield return new WaitForSeconds(1.0f);
         _laserBeam.enabled = true;

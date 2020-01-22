@@ -31,6 +31,8 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private GameObject _asteroidPrefab;
 
+    [SerializeField]
+    private GameObject _bossPrefab;
 
     [SerializeField]
     private GameObject _enemyContainer;
@@ -69,7 +71,7 @@ public class SpawnManager : MonoBehaviour
     public void StartSpawning()
     {
         // if you want to test a single type of enemy uncomment the following;
-        ////CreateTypeOfEnemy(EnemyType.Basic);
+        ////CreateTypeOfEnemy(EnemyType.LaserBeam);
         ////return;
 
         SetNextWave();
@@ -134,19 +136,53 @@ public class SpawnManager : MonoBehaviour
         yield return new WaitForSeconds(_spawnWaveDelay);
         while (!_hasStoppedSpawning)
         {
-            _currentSubWaveIndex++;
-            if (_currentSubWaveIndex >= _currentWave.Waves.Length - 1)
+            bool isWaitingForAllDestroyedEnemy = false;
+            if (_currentSubWave != null && _currentSubWave.DelayUntilNextWave == SubWave.DelayUntilAllEnemiesAreDead)
             {
-                yield return new WaitForSeconds(_delayNextEnemy);
-                SetNextWave();
-                _currentSubWaveIndex = 0;
+                var anyChildren = _enemyContainer.transform.childCount > 0;
+                isWaitingForAllDestroyedEnemy = anyChildren;
             }
 
-            _currentSubWave = _currentWave.Waves[_currentSubWaveIndex];
-            SetPowerUpsForSubWave();
-            CreateEnemiesForSubWave();
+            if (!isWaitingForAllDestroyedEnemy)
+            {
+                _currentSubWaveIndex++;
+                print($"_currentSubWaveIndex {_currentSubWaveIndex}");
+                if (_currentSubWaveIndex > _currentWave.Waves.Length - 1)
+                {
+                    print("subwaves reached max");
+                    yield return new WaitForSeconds(_delayNextEnemy);
+                    SetNextWave();
+                    _currentSubWaveIndex = 0;
+                }
 
-            yield return new WaitForSeconds(_currentSubWave.DelayUntilNextWave);
+                try
+                {
+                    _currentSubWave = _currentWave.Waves[_currentSubWaveIndex];
+                    if (_currentSubWaveIndex == _currentWave.Waves.Length - 1)
+                    {
+                        // always force last sub wave to wait until all enemies are dead
+                        _currentSubWave.DelayUntilNextWave = SubWave.DelayUntilAllEnemiesAreDead;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"{e.Message} _currentSubWaveIndex {_currentSubWaveIndex} for {_currentWave.name}");
+                }
+
+                SetPowerUpsForSubWave();
+                CreateEnemiesForSubWave();
+            }
+
+            if (_currentSubWave.DelayUntilNextWave == SubWave.DelayUntilAllEnemiesAreDead)
+            {
+                // poll to check for destroyed enemy
+                yield return new WaitForSeconds(1f);
+            }
+            else
+            {
+                yield return new WaitForSeconds(_currentSubWave.DelayUntilNextWave);
+            }
+            
         }
     }
 
@@ -181,6 +217,9 @@ public class SpawnManager : MonoBehaviour
                 break;
             case EnemyType.FireBackwards:
                 enemy = Instantiate(_enemyFireBackwardsPrefab, _enemyContainer.transform);
+                break;
+            case EnemyType.Boss:
+                enemy = Instantiate(_bossPrefab, _enemyContainer.transform);
                 break;
             default:
                 enemy = Instantiate(_enemyPrefab, _enemyContainer.transform);

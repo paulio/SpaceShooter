@@ -5,6 +5,7 @@
         Basic,
         WaypointFollower,
         LaserBeam,
-        FireBackwards
+        FireBackwards,
+        Boss
     }
 }

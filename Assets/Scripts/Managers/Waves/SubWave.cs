@@ -4,6 +4,8 @@ namespace Assets.Scripts.Managers.Waves
 {
     public class SubWave : MonoBehaviour
     {
+        public const int DelayUntilAllEnemiesAreDead = -1;
+
         [SerializeField]
         private EnemyDefinition[] _enemies;
 
@@ -17,6 +19,17 @@ namespace Assets.Scripts.Managers.Waves
 
         public PowerUp[] PowerUps => _powerUps;
 
-        public float DelayUntilNextWave => _delayUntilNextWave;
+        public float DelayUntilNextWave 
+        {
+            get
+            {
+                return _delayUntilNextWave;
+            }
+            set
+            {
+                _delayUntilNextWave = value;
+            }
+        }
+
     }
 }

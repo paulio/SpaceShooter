@@ -90,7 +90,6 @@ public class PowerUp : MonoBehaviour
             }
             else if (laser.IsEnemyMissile)
             {
-                print("Power up hit by enemy missile");
                 Destroy(this.gameObject);
                 Destroy(collision.gameObject);
             }

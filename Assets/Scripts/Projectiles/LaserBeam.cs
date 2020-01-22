@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 
 public class LaserBeam : MonoBehaviour
@@ -37,6 +35,12 @@ public class LaserBeam : MonoBehaviour
         {
             _spriteRenderer.size += new Vector2(0f, 5f * Time.deltaTime);
         }
+    }
+
+    public void SetAsDestroyed()
+    {
+        if (_spriteRenderer && this.gameObject)
+            _spriteRenderer.size = new Vector2(0f, 0f);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

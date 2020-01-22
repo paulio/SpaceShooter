@@ -8,6 +8,8 @@ TagManager:
   - Laser
   - PowerUp
   - LaserBeam
+  - Boss
+  - TurretShell
   layers:
   - Default
   - TransparentFX

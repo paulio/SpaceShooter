@@ -58,7 +58,10 @@ public class UIManager : MonoBehaviour
 
     public void UpdateThrustFuel(float thrustFuel)
     {
-        _thrustFuel.UpdateThrustFuel(thrustFuel);
+        if (_thrustFuel != null)
+        {
+            _thrustFuel.UpdateThrustFuel(thrustFuel);
+        }
     }
 
     public void UpdateLives(int lives)
