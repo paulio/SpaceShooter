@@ -55,6 +55,8 @@ public class SpawnManager : MonoBehaviour
     private int _currentSubWaveIndex;
     private SubWave _currentSubWave;
 
+    private int _currentLevel = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -83,6 +85,11 @@ public class SpawnManager : MonoBehaviour
     {
         _currentWaveIndex++;
         _currentWave = _waves[_currentWaveIndex % _waves.Length];
+        if (_currentWaveIndex % _waves.Length == 0)
+        {
+            _currentLevel++;
+        }
+
         _currentSubWaveIndex = -1;
         print($"Wave {_currentWaveIndex} {_currentWave.name}");
     }
@@ -196,7 +203,7 @@ public class SpawnManager : MonoBehaviour
         for (int enemyTypeIndex = 0; enemyTypeIndex < _currentSubWave.Enemies.Length; enemyTypeIndex++)
         {
             var enemyDefinition = _currentSubWave.Enemies[enemyTypeIndex];
-            for (int enemyIndex = 0; enemyIndex < enemyDefinition.Count; enemyIndex++)
+            for (int enemyIndex = 0; enemyIndex < (enemyDefinition.Count -1 + _currentLevel); enemyIndex++)
             {
                 CreateTypeOfEnemy(enemyDefinition.EnemyType);
             }
