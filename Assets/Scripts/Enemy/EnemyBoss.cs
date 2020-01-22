@@ -33,6 +33,8 @@ public class EnemyBoss : MonoBehaviour
     private float _nextFire;
     private bool _canFire = false;
 
+    public int CurrentLevel { get; set; }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +48,7 @@ public class EnemyBoss : MonoBehaviour
         LogHelper.CheckForNull(_laserBeam, nameof(_laserBeam));
 
         _bossEye = GetComponentInChildren<EnemyBossEye>();
+        _bossEye.HitPoints += CurrentLevel;
         LogHelper.CheckForNull(_bossEye, nameof(_bossEye));
 
         _bossEye.Destroyed.AddListener(BossEyeDestroyed);
@@ -57,6 +60,7 @@ public class EnemyBoss : MonoBehaviour
         {
             turret.Destroyed.AddListener(OnTurretDestroyed);
             turret.IsImmune = true;
+            turret.HitPoints += CurrentLevel;
         }
 
         _nextFire = Time.time + UnityEngine.Random.Range(2f, 10f);

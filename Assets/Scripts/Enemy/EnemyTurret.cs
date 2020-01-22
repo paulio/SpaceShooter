@@ -30,6 +30,18 @@ public class EnemyTurret : MonoBehaviour, ITakeDamage
 
     public bool IsImmune { get; set; }
 
+    public int HitPoints
+    {
+        get
+        {
+            return _hitPoints;
+        }
+        set
+        {
+            _hitPoints = value;
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {

@@ -18,6 +18,18 @@ public class EnemyBossEye : MonoBehaviour, ITakeDamage
 
     public bool IsImmune { get; set; }
 
+    public int HitPoints 
+    { 
+        get
+        {
+            return _hitPoints;
+        }
+        set
+        {
+            _hitPoints = value;
+        }
+    }
+
     void Start()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();

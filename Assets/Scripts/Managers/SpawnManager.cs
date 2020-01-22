@@ -203,14 +203,23 @@ public class SpawnManager : MonoBehaviour
         for (int enemyTypeIndex = 0; enemyTypeIndex < _currentSubWave.Enemies.Length; enemyTypeIndex++)
         {
             var enemyDefinition = _currentSubWave.Enemies[enemyTypeIndex];
-            for (int enemyIndex = 0; enemyIndex < (enemyDefinition.Count -1 + _currentLevel); enemyIndex++)
+            if (enemyDefinition.EnemyType == EnemyType.Boss)
             {
-                CreateTypeOfEnemy(enemyDefinition.EnemyType);
+                var bossGameObject = CreateTypeOfEnemy(enemyDefinition.EnemyType);
+                var boss = bossGameObject.GetComponent<EnemyBoss>();
+                boss.CurrentLevel = _currentLevel;
+            }
+            else
+            {
+                for (int enemyIndex = 0; enemyIndex < (enemyDefinition.Count - 1 + _currentLevel); enemyIndex++)
+                {
+                    CreateTypeOfEnemy(enemyDefinition.EnemyType);
+                }
             }
         }
     }
 
-    private void CreateTypeOfEnemy(EnemyType enemyType)
+    private GameObject CreateTypeOfEnemy(EnemyType enemyType)
     {
         GameObject enemy;
 
@@ -237,6 +246,8 @@ public class SpawnManager : MonoBehaviour
         {
             Debug.LogError("Enemy failed to be created");
         }
+
+        return enemy;
     }
 
     private GameObject CreateWaypointFollowerEnemy(GameObject enemyPrefab)
