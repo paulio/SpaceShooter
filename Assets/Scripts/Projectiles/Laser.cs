@@ -1,12 +1,13 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Projectiles;
+using UnityEngine;
 
-public class Laser : MonoBehaviour
+public class Laser : MonoBehaviour, IProjectile
 {
     [SerializeField]
     private float _speed = 8f;
 
     [SerializeField]
-    private bool _isUpMissile = true;
+    private bool _isEnemyMissile = true;
 
     [SerializeField]
     private Vector3 _direction = Vector3.up;
@@ -18,20 +19,27 @@ public class Laser : MonoBehaviour
     private const float MaxBoundaryPositiveY = 8f;
     private const float MinBoundaryPositiveY = -2.0f;
 
-    public bool IsUpMissile => _isUpMissile;
+    public bool IsEnemyMissile => _isEnemyMissile;
 
 
-    public void SetDownMissile()
+    public void SetEnemyMissile(bool isDirectionDown)
     {
-        _isUpMissile = false;
-        _direction = Vector3.down;
+        _isEnemyMissile = true;
+        if (isDirectionDown)
+        {
+            _direction = Vector3.down;
+        }
+        else
+        {
+            _direction = Vector3.up;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!_isUpMissile && collision.CompareTag("Player"))
+        if (_isEnemyMissile && collision.CompareTag("Player"))
         {
-            _player?.TakeDamage(10);
+            _player.TakeDamage(10);
             Destroy(this.gameObject);
         }
     }

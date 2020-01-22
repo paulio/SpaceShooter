@@ -7,6 +7,9 @@ TagManager:
   - Enemy
   - Laser
   - PowerUp
+  - LaserBeam
+  - Boss
+  - TurretShell
   layers:
   - Default
   - TransparentFX
@@ -17,7 +20,7 @@ TagManager:
   - 
   - 
   - Post Processing
-  - 
+  - Sensor
   - 
   - 
   - 

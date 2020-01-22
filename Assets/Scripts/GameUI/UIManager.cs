@@ -43,9 +43,9 @@ public class UIManager : MonoBehaviour
         _scoreText.text = $"Score: {score.ToString("D3")}";
     }
 
-    public void UpdateAmmo(int ammo)
+    public void UpdateAmmo(int ammo, int maxAmmo)
     {
-        _ammoText.text = $"Ammo: {ammo.ToString("D2")}";
+        _ammoText.text = $"Ammo: {ammo.ToString("D2")}/{maxAmmo.ToString("D2")}";
         if (ammo < 1)
         {
             _ammoText.color = Color.red;
@@ -58,7 +58,10 @@ public class UIManager : MonoBehaviour
 
     public void UpdateThrustFuel(float thrustFuel)
     {
-        _thrustFuel.UpdateThrustFuel(thrustFuel);
+        if (_thrustFuel != null)
+        {
+            _thrustFuel.UpdateThrustFuel(thrustFuel);
+        }
     }
 
     public void UpdateLives(int lives)

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2996280951388940747}
   m_Layer: 0
   m_Name: Asteroid
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -136,6 +136,4 @@ MonoBehaviour:
   _speedRotation: 3
   _damage: 1
   _explosion: {fileID: 1499446541041299265, guid: 031156a65176ba4439a2b1da3634f21a,
-    type: 3}
-  _explosionAudio: {fileID: 7854667789442309461, guid: 62874020579d5744fbd8e201d87f7335,
     type: 3}
